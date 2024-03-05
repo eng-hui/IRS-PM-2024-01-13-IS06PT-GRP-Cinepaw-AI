@@ -15,6 +15,7 @@ import { Flexbox } from 'react-layout-kit';
 import { ThemeProvider } from '@lobehub/ui';
 import { useState } from 'react';
 import axios from "axios"
+import { Row, Col } from 'antd';
 
 
 export default () => {
@@ -42,19 +43,19 @@ export default () => {
   }
   return (
     <ThemeProvider>
-    <div>
-      
-  <Flexbox style={{ height: 300, position: 'relative' }}>
+  <Row>
+  <Col span={24}>
   <ChatList data={conversation}
           renderMessages={{
             default: ({ id, content }) => <div id={id}>{content}</div>,
           }}
   >
-
   </ChatList>
+  </Col>
+  </Row>
 
-  </Flexbox>
-  <Flexbox style={{ height: 200, position: 'relative' }}>
+  <Row>
+    <Col span={24}>
     <ChatInputArea onSend={()=>sendMessage()} onInput={(value)=>{setInputText(value)}}
     bottomAddons={<ChatSendButton/>}
     topAddons={
@@ -69,9 +70,8 @@ export default () => {
       />
     }
   />
-  </Flexbox>
-  
-  </div>
+  </Col>
+  </Row>
   </ThemeProvider>
   );
 };
