@@ -1,16 +1,4 @@
-﻿### [ Practice Module ] Project Submission Template: Github Repository & Zip File
-
-**[ Naming Convention ]** CourseCode-StartDate-BatchCode-TeamName-ProjectName.zip
-
-* **[ MTech Thru-Train Group Project Naming Example ]** IRS-PM-2020-01-18-IS02PT-GRP-AwsomeSG-HDB_BTO_Recommender.zip
-
-* **[ MTech Stackable Group Project Naming Example ]** IRS-PM-2020-01-18-STK02-GRP-AwsomeSG-HDB_BTO_Recommender.zip
-
-[Online editor for this README.md markdown file](https://pandao.github.io/editor.md/en.html "pandao")
-
----
-
-### <<<<<<<<<<<<<<<<<<<< Start of Template >>>>>>>>>>>>>>>>>>>>
+﻿
 
 ---
 
@@ -22,6 +10,8 @@
 ---
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
+
+[Place Holder]
 Singapore ranks amongst countries with the highest population density in the world. In a bid to have firm control over long term urban planning, the Singapore government came up with the “Built to Order” (abbreviated BTO) initiative back in 2001. These are new Housing Development Board (HDB) flats tightly controlled by their eligibility and quantity released every year. In more recent years, the modern BTO scheme in Singapore requires a waiting period of 3-4 years, and is generally targeted at young Singaporean couples looking to purchase their first property and set up a family. Nationality and income ceilings are some of the broad filters that determine one’s eligibility for the highly sought after projects. 
 
 
@@ -39,7 +29,7 @@ Our team had an amazing time working on this project, and hope to share our insi
 
 | Official Full Name  | Student ID | Work Items | Email  |
 | :------------ |:---------------:| :-----| :-----|
-| Tan Eng Hui | A0291201W | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| enghui@u.nus.edu |
+| Tan Eng Hui | A0291201W | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1330340@u.nus.edu |
 | Lois Chee Li Ping | A0292098R | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1338192@u.nus.edu |
 | Dong Yuantong | A0292041N | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1337515@u.nus.edu |
 | Wang Tao | A0291189R | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1330328@u.nus.edu |
@@ -48,6 +38,7 @@ Our team had an amazing time working on this project, and hope to share our insi
 
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 
+[Place Holder]
 [![Sudoku AI Solver](http://img.youtube.com/vi/-AiYLUjP6o8/0.jpg)](https://youtu.be/-AiYLUjP6o8 "Sudoku AI Solver")
 
 Note: It is not mandatory for every project member to appear in video presentation; Presentation by one project member is acceptable. 
@@ -115,15 +106,3 @@ Note: It is not mandatory for every project member to appear in video presentati
 * Insights derived, which were subsequently used in our system
 
 ---
-
-### <<<<<<<<<<<<<<<<<<<< End of Template >>>>>>>>>>>>>>>>>>>>
-
----
-
-**This [Machine Reasoning (MR)](https://www.iss.nus.edu.sg/executive-education/course/detail/machine-reasoning "Machine Reasoning") course is part of the Analytics and Intelligent Systems and Graduate Certificate in [Intelligent Reasoning Systems (IRS)](https://www.iss.nus.edu.sg/stackable-certificate-programmes/intelligent-systems "Intelligent Reasoning Systems") series offered by [NUS-ISS](https://www.iss.nus.edu.sg "Institute of Systems Science, National University of Singapore").**
-
-**Lecturer: [GU Zhan (Sam)](https://www.iss.nus.edu.sg/about-us/staff/detail/201/GU%20Zhan "GU Zhan (Sam)")**
-
-[![alt text](https://www.iss.nus.edu.sg/images/default-source/About-Us/7.6.1-teaching-staff/sam-website.tmb-.png "Let's check Sam' profile page")](https://www.iss.nus.edu.sg/about-us/staff/detail/201/GU%20Zhan)
-
-**zhan.gu@nus.edu.sg**
