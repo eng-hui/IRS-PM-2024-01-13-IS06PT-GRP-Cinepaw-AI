@@ -15,10 +15,9 @@
 ---
 
 ## SECTION 1 : PROJECT TITLE
-## Singapore Housing & Deveoplment Board - BTO Recommender System
+## CinePaw AI - Explore the world of movies with your own personalised movie guide!
 
-<img src="SystemCode/clips/static/hdb-bto.png"
-     style="float: left; margin-right: 0px;" />
+<img src="Images/front.webp" width="400" />  
 
 ---
 
@@ -38,13 +37,12 @@ Our team had an amazing time working on this project, and hope to share our insi
 
 ## SECTION 3 : CREDITS / PROJECT CONTRIBUTION
 
-| Official Full Name  | Student ID (MTech Applicable)  | Work Items (Who Did What) | Email (Optional) |
+| Official Full Name  | Student ID | Work Items | Email  |
 | :------------ |:---------------:| :-----| :-----|
-| Desmond Chua | A1234567A | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| A1234567A@nus.edu.sg |
-| Chang Ye Han | A1234567B | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| A1234567B@gmail.com |
-| Chee Jia Wei | A1234567C | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| A1234567C@outlook.com |
-| Ganesh Kumar | A1234567D | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| A1234567D@yahoo.com |
-| Jeanette Lim | A1234567E | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| A1234567E@qq.com |
+| Tan Eng Hui | A0291201W | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| enghui@u.nus.edu |
+| Lois Chee Li Ping | A0292098R | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1338192@u.nus.edu |
+| Dong Yuantong | A0292041N | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1337515@u.nus.edu |
+| Wang Tao | A0291189R | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1330328@u.nus.edu |
 
 ---
 
@@ -53,7 +51,6 @@ Our team had an amazing time working on this project, and hope to share our insi
 [![Sudoku AI Solver](http://img.youtube.com/vi/-AiYLUjP6o8/0.jpg)](https://youtu.be/-AiYLUjP6o8 "Sudoku AI Solver")
 
 Note: It is not mandatory for every project member to appear in video presentation; Presentation by one project member is acceptable. 
-More reference video presentations [here](https://telescopeuser.wordpress.com/2018/03/31/master-of-technology-solution-know-how-video-index-2/ "video presentations")
 
 ---
 
