@@ -10,6 +10,7 @@ import os
 from openai import OpenAI
 from pydantic import BaseModel
 from typing import List
+import datetime
 
 client = OpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
@@ -52,10 +53,10 @@ async def chat_test(input:ChatInput):
         model="gpt-3.5-turbo",
     )
     text = chat_completion.dict()['choices'][0]['message']['content']
-
+    timestamp = int(datetime.datetime.now().timestamp())
     tmp = {
       "content": text,
-      "createAt": 1_686_437_950_084,
+      "createAt": timestamp,
       "extra": {},
       "id": '2',
       "meta": {
@@ -63,8 +64,12 @@ async def chat_test(input:ChatInput):
         "title": 'cinebear',
       },
       "role": 'assistant',
-      "updateAt": 1_686_437_950_084,
+      "updateAt": timestamp,
     }
     return tmp
+
+
+def input_parse(input:ChatInput):
+    pass
 
 
