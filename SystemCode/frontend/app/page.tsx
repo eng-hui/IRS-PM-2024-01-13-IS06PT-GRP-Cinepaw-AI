@@ -59,7 +59,6 @@ export default () => {
   };
 
   return (
-
     <ThemeProvider>
         <Row className="header-style">
         <Col span={3}>
@@ -85,6 +84,7 @@ export default () => {
       </Row>
       <Row style={{ marginTop: '20px' }}>
         <Col span={24}>
+          <Card style={{backgroundColor: "FFFFFF"}}>
           <ChatInputArea
             onSend={() => sendMessage()}
             value={inputText}
@@ -102,6 +102,7 @@ export default () => {
               />
             }
           />
+          </Card>
         </Col>
       </Row>
     </ThemeProvider>
