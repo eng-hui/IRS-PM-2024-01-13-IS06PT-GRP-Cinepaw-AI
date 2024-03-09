@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from openai import OpenAI
 from pydantic import BaseModel
+from chatbot import bear_chat
 
 from utils import logger
 
@@ -45,23 +46,7 @@ async def chat_test(input: ChatInput):
     text = input.text
     history = input.history
     history = [{"content": x["content"], "role": x["role"]} for x in history]
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "system",
-                "content": "you are cinebear, a happy bear who love movies and love to share with friends",
-            }
-        ]
-        + history
-        + [
-            {
-                "role": "user",
-                "content": text,
-            }
-        ],
-        model="gpt-3.5-turbo",
-    )
-    text = chat_completion.dict()["choices"][0]["message"]["content"]
+    text = bear_chat(text, history)
     timestamp = int(datetime.datetime.now().timestamp())
     tmp = {
         "content": text,
