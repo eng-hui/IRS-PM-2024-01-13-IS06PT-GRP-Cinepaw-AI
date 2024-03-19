@@ -1,7 +1,8 @@
 import os
 from openai import OpenAI
-from anthropic import Anthropic
+# from anthropic import Anthropic
 from jinja2 import Environment, FileSystemLoader, Template, meta, select_autoescape
+from utils import logger
 
 jinja_env = Environment(
     loader=FileSystemLoader("templates"), autoescape=select_autoescape()
@@ -24,7 +25,7 @@ def client_chat(messages, model_name=None):
         pass
 
     if backend=="openai":
-        model_name = "gpt-3.5-turbo"
+        model_name = "gpt-4"
         result = client.chat.completions.create(
             messages = messages,
             model_name = model_name
@@ -40,8 +41,9 @@ def client_chat(messages, model_name=None):
 
 
 
-def chat(text, history):
-    template = jinja_env.get_template("bear.jinja2")
+def chat(text, history, template="bear.jinja2"):
+    logger.info(history)
+    template = jinja_env.get_template(template)
     text = template.render(text=text)
     chat_completion = client.chat.completions.create(
         messages=[
@@ -53,7 +55,7 @@ def chat(text, history):
         + history
         + [
             {
-                "role": "user",
+                "role": "system",
                 "content": text,
             }
         ],

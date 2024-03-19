@@ -7,6 +7,24 @@ please write a reply to user as a friend,
 
 result should be in json format like this:
 {
+    "intents": List[str], # User's intention, usable option see below, could be empty or multiple
     "reply": text,
-    "search": {"title":str} # generate the query for search/recommend movies to user, None if no need to
+    "movies": [{
+        "title": str, # title or name of the movie
+    }] # fetch movie info by title, None if intent is "normal_chat"
+    "user_comments":[
+        {
+            "title":str, # movie's title
+            "score": int, # 0~10, how much user like this movie, null if unknow
+            "watched": bool, # if user watched this movie, null is unknow
+            "quote": str, # quote from user's input
+        } 
+    ] # user's comments related to movies, could be empty
 }
+
+<Intention Options>
+"normal_chat": universal chat 
+"ask_for_search_or_recommend": user explictly ask for searching or recommend movies
+"hint_for_search_or_recommend": user didn't say it, but maybe we could search or recommend some movies to respond user's input.
+"expression": user express like, dislike, have watched, want to watch a movie, need to take a mark
+</Intention Options>

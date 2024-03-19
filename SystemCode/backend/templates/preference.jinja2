@@ -1,0 +1,16 @@
+Here is the User's input, inteprete user's attitude to moives into json result
+
+## User Input ##
+{{ text }}
+## End Input ##
+
+result should be in json format like this:
+[
+    {
+        "title":str, # movie's title
+        "score": int, # 0~10, how much user like this movie, null if unknow
+        "watched": bool, # if user watched this movie, null is unknow
+    } # a point to movie
+]
+
+Return result in standard json format:

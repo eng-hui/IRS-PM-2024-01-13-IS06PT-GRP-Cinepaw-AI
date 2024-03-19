@@ -13,15 +13,18 @@ import {
   Markdown,
   
 } from '@lobehub/ui';
-
-
+import { Logo, SideNav } from '@lobehub/ui';
 import { Eraser, Languages } from 'lucide-react';
 import { Flexbox } from 'react-layout-kit';
 import { ThemeProvider } from '@lobehub/ui';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect} from 'react';
 import axios from "axios";
-import { Row, Col, Card, Image } from 'antd';
-import { Scope_One } from 'next/font/google';
+import { Row, Col, Card,Image } from 'antd';
+import { ImageGallery } from '@lobehub/ui';
+import { Block } from './block';
+import { Album, MessageSquare, Settings2 } from 'lucide-react';
+
+
 
 
 export default () => {
@@ -36,9 +39,10 @@ export default () => {
   const [inputText, setInputText] = useState<string>('');
 
   const sendMessage = () => {
+    var timestamp=new Date().getTime()
     const c: ChatMessage = {
       content: inputText,
-      createAt: 1_686_437_950_084,
+      createAt: timestamp,
       extra: {},
       id: '1',
       meta: {
@@ -46,65 +50,88 @@ export default () => {
         title: 'CanisMinor',
       },
       role: 'user',
-      updateAt: 1_686_437_950_084,
+      updateAt: timestamp,
     };
 
     setConversation(oldArray => [...oldArray, c]);
     setInputText('');
 
-    axios.post("/api/chat_test", { "text": inputText, "history": conversation.slice(0, -1) }).then((response) => {
+    axios.post("/api/chat_test", { "text": inputText, "history": conversation }).then((response) => {
       console.log(response.data);
       setConversation(oldArray => [...oldArray, response.data]);
     });
   };
 
+  const renderMessage = (msg:any) => {
+    return (<><div id={msg?.id}>
+      <Markdown children={String(msg?.content)}></Markdown>
+      <Row>
+      { (msg?.blocks??[]).map((e:any)=>{
+        return( <Col span={3}><Block title={e.title} 
+          image_url={"https://media.themoviedb.org/t/p/w440_and_h660_face"+e.poster_path}
+          ></Block></Col>
+        )
+      })}
+      </Row>
+      {msg?.image?<Image width={200} src={msg?.image}/>:<></>}
+    </div>
+      </>)
+  }
+
   return (
     <ThemeProvider>
-        <Row className="header-style">
+        <Row>
         <Col span={3}>
           <Image style={{marginTop: "10px", marginLeft: "10px"}} width={100} src="/Images/cinepaw_logo.webp" alt="logo" />
         </Col>
         <Col span={21}>
         </Col> 
       </Row>
-      <Row>
-        <Col span={24} style={{ height: '400px', overflow: 'auto' }}>
-          <ChatList
-            data={conversation}
-            renderMessages={{
-              default: (msg) => {
-                console.log('yyyyyyyyyyyyyy');
-                console.log(msg ?? '');
-                return <div id={msg?.id}><Markdown children={String(msg?.content)}></Markdown></div>;
-              },
-            }}
-          ></ChatList>
-          <div ref={scrollableRef} style={{ overflowAnchor: 'auto' }}></div>
-        </Col>
+      <Row><Col span={1}><SideNav
+        style={{"width": "100%"}}       
+        avatar={<Logo size={40} />}
+      bottomActions={<ActionIcon icon={Settings2} />}
+      ></SideNav></Col>
+      <Col span={23}>
+        <Row>
+          <Col span={24} style={{ height: '400px', overflow: 'auto' }}>
+            <ChatList
+              data={conversation}
+              renderMessages={{
+                default: (msg) => {
+                  return renderMessage(msg)
+                },
+              }}
+            ></ChatList>
+            <div ref={scrollableRef} style={{ overflowAnchor: 'auto' }}></div>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: '20px' }} >
+          <Col span={24}>
+            <Card style={{backgroundColor: "FFFFFF"}}>
+            <ChatInputArea
+              onSend={() => sendMessage()}
+              value={inputText}
+              onInput={(value) => { setInputText(value) }}
+              bottomAddons={<ChatSendButton />}
+              topAddons={
+                <ChatInputActionBar
+                  leftAddons={
+                    <>
+                      <ActionIcon icon={Languages} />
+                      <ActionIcon icon={Eraser} onClick={() => { setInputText('') }} />
+                      {/* <TokenTag maxValue={5000} value</div>={1000} /> */}
+                    </>
+                  }
+                />
+              }
+            />
+            </Card>
+          </Col>
+        </Row>      
+      </Col>
       </Row>
-      <Row style={{ marginTop: '20px' }}>
-        <Col span={24}>
-          <Card style={{backgroundColor: "FFFFFF"}}>
-          <ChatInputArea
-            onSend={() => sendMessage()}
-            value={inputText}
-            onInput={(value) => { setInputText(value) }}
-            bottomAddons={<ChatSendButton />}
-            topAddons={
-              <ChatInputActionBar
-                leftAddons={
-                  <>
-                    <ActionIcon icon={Languages} />
-                    <ActionIcon icon={Eraser} onClick={() => { setInputText('') }} />
-                    {/* <TokenTag maxValue={5000} value</div>={1000} /> */}
-                  </>
-                }
-              />
-            }
-          />
-          </Card>
-        </Col>
-      </Row>
+
     </ThemeProvider>
   );
 };

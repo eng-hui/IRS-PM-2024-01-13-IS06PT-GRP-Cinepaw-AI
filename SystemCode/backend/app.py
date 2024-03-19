@@ -14,13 +14,15 @@ import json
 import requests
 from utils import logger
 import os
-
-client = OpenAI(
-    api_key=os.environ.get("OPENAI_API_KEY"),
-)
+import uuid
+from kombu import Connection, Exchange, Queue
+from chatbot.message import produce_chat_message, consume_chat_message
+from fastapi import BackgroundTasks
+from actions.mark import preference_inteprete
 
 
 app = FastAPI()
+
 
 
 POSTER_URL = "https://media.themoviedb.org/t/p/w440_and_h660_face"
@@ -37,65 +39,90 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     )
 
 
-@app.get("/")
-async def index():
-    return {"hello": "world"}
-
-
 class ChatInput(BaseModel):
     text: str
     history: List = []
+    session_key: str = None
 
+
+
+@app.get("/init_chat")
+async def init_chat():
+    session_key = uuid.uuid4().hex
+    return {"session_key":session_key}
+
+
+async def construct_result(text, blocks=None):
+    timestamp = int(datetime.datetime.now().timestamp()*1000)
+    tmp = {
+        "content": text,
+        "createAt": timestamp,
+        "extra": {},
+        "id": "2",
+        "meta": {
+            "avatar": "https://images.unsplash.com/photo-1589656966895-2f33e7653819?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "title": "cinebear",
+        },
+        "role": "assistant",
+        "updateAt": timestamp,
+    }
+    if (blocks is not None) and (len(blocks)>0):
+        tmp["blocks"] = blocks
+    return tmp
 
 @app.post("/chat_test")
-async def chat_test(input: ChatInput):
+async def chat_test(input: ChatInput, background_tasks:BackgroundTasks):
+    text = input.text
+    history = input.history
+    history = assemble_history_message(history)
+    chat_result = chat(text, history)
+
+    logger.info(chat_result)
+    result = json.loads(chat_result)
+
+    # check intent
+    intents = result.get("intents", [])
+    if "expression" in intents:
+        background_tasks.add_task(preference_inteprete, text=text, history=history)
+
+
+
+    text = result["reply"]
+    movies = result.get("movies")
+    logger.info(movies)
+
+    blocks = []
+    if movies is not None:
+        for x in movies:
+            title = x.get("title")
+            if title:
+                movie = query_movie_db(title)
+                movie["block_type"] = "movie"
+                blocks.append(movie)
+    
+    logger.info(blocks)
+    msg = await construct_result(text, blocks=blocks)
+    return msg
+
+
+@app.post("/chat_input")
+def chat_input(input: ChatInput):
+    session_key = input.session_key
     text = input.text
     history = input.history
     history = [{"content": x["content"], "role": x["role"]} for x in history]
-    text = chat(text, history)
+    text = chat(text, history, template="bear.jinja2")
     logger.info(text)
     result = json.loads(text)
     text = result["reply"]
     query = result.get("search")
+    background_tasks.add_task(post_to_zendesk, result=result)
 
-    
-    timestamp = int(datetime.datetime.now().timestamp()*1000)
-    # no search action
-    if (query is None) or (len(query)==0):
-        tmp = {
-            "content": text,
-            "createAt": timestamp,
-            "extra": {},
-            "id": "2",
-            "meta": {
-                "avatar": "https://images.unsplash.com/photo-1589656966895-2f33e7653819?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                "title": "cinebear",
-            },
-            "role": "assistant",
-            "updateAt": timestamp,
-        }
-        messages = tmp
-        return messages
-    else:
+@app.get("/consume_messgae/<session_key>")
+async def consume_message_api(session_key):
+    msg = consume_chat_message(session_key)
+    return msg
 
-        title = query["title"]
-        movie = query_movie_db(title)
-        logger.info(query)
-        text = f"""{text}"""
-        tmp = {
-            "content": text,
-            "createAt": timestamp,
-            "extra": {},
-            "id": "2",
-            "image":{POSTER_URL+movie["poster_path"]},
-            "meta": {
-                "avatar": "https://images.unsplash.com/photo-1589656966895-2f33e7653819?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-                "title": "cinebear",
-            },
-            "role": "assistant",
-            "updateAt": timestamp,
-        }
-        return tmp
 
 
 def query_movie_db(title):
@@ -109,8 +136,25 @@ def query_movie_db(title):
     }
     url = TMBD_QUERY_API + query
     re = requests.get(url, headers=headers).json()
-    logger.info(re)
     return re.get("results")[0]
 
 def input_parse(input: ChatInput):
     pass
+
+
+def reply_construct():
+    pass
+
+def assemble_history_message(raw_history):
+    result = []
+    for x in raw_history:
+        tmp = {"content": x["content"], "role": x["role"]}
+
+        rec_movies = "Recommend Movies: "
+        for b in x.get("blocks", []):
+            if b["block_type"] == "movie":
+                rec_movies += f"<Movie: {b['title']}> "
+        
+        tmp["content"] = x["content"] +"\n===\n" + rec_movies
+        result.append(tmp)
+    return result
