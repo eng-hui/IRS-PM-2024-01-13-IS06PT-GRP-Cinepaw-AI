@@ -45,7 +45,6 @@ RUN curl -sSL https://install.python-poetry.org | python3 -
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
-COPY libs ./libs
 RUN poetry --version
 RUN poetry install --no-dev
 
