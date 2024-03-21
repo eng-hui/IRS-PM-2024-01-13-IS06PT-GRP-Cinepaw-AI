@@ -9,7 +9,7 @@ jinja_env = Environment(
 )
 
 
-backend = "azure_openai"
+backend = os.environ.get("DEFAULT_LLM_ENDPOINT") or "openai"
 
 if backend == "openai":
     client = OpenAI(
