@@ -27,7 +27,7 @@ import { Album, MessageSquare, Settings2 } from 'lucide-react';
 
 
 
-export default () => {
+export default function App(){
   const scrollableRef = useRef<null | HTMLDivElement>(null);
 
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
@@ -64,10 +64,11 @@ export default () => {
 
   const renderMessage = (msg:any) => {
     return (<><div id={msg?.id}>
-      <Markdown children={String(msg?.content)}></Markdown>
+      <Markdown>{String(msg?.content)}</Markdown>
       <Row>
       { (msg?.blocks??[]).map((e:any)=>{
-        return( <Col span={3}><Block title={e.title} 
+        return( <Col span={3} key={e.title}>
+          <Block title={e.title} 
           image_url={"https://media.themoviedb.org/t/p/w440_and_h660_face"+e.poster_path}
           ></Block></Col>
         )

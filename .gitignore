@@ -159,4 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-SystemCode/experiments/datasets/*
+
+SystemCode/experiments/datasets/ml25m
+SystemCode/experiments/datasets/ml-25m*
+
