@@ -72,20 +72,23 @@ async def construct_result(text, blocks=None):
 
 @app.post("/chat_test")
 async def chat_test(input: ChatInput, background_tasks:BackgroundTasks):
+    print(input)
     text = input.text
     history = input.history
     history = assemble_history_message(history)
     chat_result = chat(text, history)
 
     logger.info(chat_result)
-    result = json.loads(chat_result)
+    json_dump = json.dumps(chat_result)
+    try:
+        result = json.loads(json.loads(json_dump))
+    except:
+        result = json.loads(json_dump)
 
     # check intent
     intents = result.get("intents", [])
     if "expression" in intents:
         background_tasks.add_task(preference_inteprete, text=text, history=history)
-
-
 
     text = result["reply"]
     movies = result.get("movies")
