@@ -29,6 +29,7 @@ import { Album, MessageSquare, Settings2 } from 'lucide-react';
 
 export default function App(){
   const scrollableRef = useRef<null | HTMLDivElement>(null);
+  const [tab, setTab] = useState('chat')
 
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
   useEffect(() => {
@@ -91,6 +92,12 @@ export default function App(){
       <Row><Col span={1}><SideNav
         style={{"width": "100%"}}       
         avatar={<Logo size={40} />}
+      topActions={<ActionIcon
+        active={tab === 'chat'}
+        icon={MessageSquare}
+        onClick={() => setTab('chat')}
+        size="large"
+      />}
       bottomActions={<ActionIcon icon={Settings2} />}
       ></SideNav></Col>
       <Col span={23}>
