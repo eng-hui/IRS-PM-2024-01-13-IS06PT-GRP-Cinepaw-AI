@@ -23,6 +23,8 @@ import { Row, Col, Card,Image } from 'antd';
 import { ImageGallery } from '@lobehub/ui';
 import { Block } from './block';
 import { Album, MessageSquare, Settings2 } from 'lucide-react';
+import useSWR from 'swr'
+
 
 
 
@@ -30,6 +32,15 @@ import { Album, MessageSquare, Settings2 } from 'lucide-react';
 export default function App(){
   const scrollableRef = useRef<null | HTMLDivElement>(null);
   const [tab, setTab] = useState('chat')
+  const [sessionKey, setSessionKey] = useState('')
+  useEffect(() => {
+    axios.get("/api/init_chat").then((response)=>{
+        setSessionKey(response.data.session_key)
+      }
+    )
+  }, []);
+  console.log(sessionKey)
+
 
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
   useEffect(() => {
@@ -57,9 +68,9 @@ export default function App(){
     setConversation(oldArray => [...oldArray, c]);
     setInputText('');
 
-    axios.post("/api/chat_test", { "text": inputText, "history": conversation }).then((response) => {
+    axios.post("/api/chat_input", { "text": inputText, "history": conversation, "session_key":sessionKey}).then((response) => {
       console.log(response.data);
-      setConversation(oldArray => [...oldArray, response.data]);
+      // setConversation(oldArray => [...oldArray, response.data]);
     });
   };
 
@@ -79,6 +90,29 @@ export default function App(){
     </div>
       </>)
   }
+
+
+  //fetch result
+  const [getFlag, setGetFlag] = useState(true)
+  const fetcher = (url:string) => {
+    let data 
+    let terror
+    if(getFlag){
+      axios.get(url).then((response) =>{
+        data = response.data;
+        if(data.success){
+          setConversation(oldArray => [...oldArray, response.data.msg])
+        }else{
+          console.log(data)
+        }
+      }).catch((error) =>{
+        terror = error
+        console.log(error)
+      })
+    }
+    return {"data":data, "error":terror}
+  }
+  const { data, error} = useSWR("/api/sub_message/"+String(sessionKey), fetcher, { refreshInterval: 1000 });
 
   return (
     <ThemeProvider>
