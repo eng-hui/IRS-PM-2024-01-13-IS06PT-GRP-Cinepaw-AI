@@ -4,7 +4,7 @@ import sqlite3
 conn = sqlite3.connect('movies.db')
 
 # Input variables for the SQL query
-movie_id = 2
+#movie_id = 2
 
 
 # Create a cursor object
