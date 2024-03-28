@@ -28,6 +28,7 @@ app = FastAPI()
 POSTER_URL = "https://media.themoviedb.org/t/p/w440_and_h660_face"
 TMBD_QUERY_API = "https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1"
 TMDB_API_KEY = os.getenv("TMDB_API")
+AZURESPEECH_API_KEY = os.getenv("AZURESPEECH_API_KEY")
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
@@ -126,11 +127,21 @@ async def consume_message_api(session_key):
     msg = consume_chat_message(session_key)
     return msg
 
+@app.get("/get_speech_token")
+async def get_speech_token():
+    subscription_key = AZURESPEECH_API_KEY
+    fetch_token_url = 'https://southeastasia.api.cognitive.microsoft.com/sts/v1.0/issueToken'
+    headers = {
+        'Ocp-Apim-Subscription-Key': subscription_key
+    }
+    response = requests.post(fetch_token_url, headers=headers)
+    access_token = str(response.text)
+    return access_token
+
 
 
 def query_movie_db(title):
     import urllib.parse
-    title = title
     urllib.parse.quote(title)
     query = f"&query={title}"
     headers = {

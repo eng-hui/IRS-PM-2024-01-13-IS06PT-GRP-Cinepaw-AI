@@ -11,6 +11,7 @@ import {
   ChatItem,
   ActionsBar,
   Markdown,
+  Header,
   
 } from '@lobehub/ui';
 import { Logo, SideNav } from '@lobehub/ui';
@@ -23,6 +24,8 @@ import { Row, Col, Card,Image } from 'antd';
 import { ImageGallery } from '@lobehub/ui';
 import { Block } from './block';
 import { Album, MessageSquare, Settings2 } from 'lucide-react';
+import { access } from 'fs';
+import { Content } from 'next/font/google';
 
 
 
@@ -58,8 +61,34 @@ export default function App(){
 
     axios.post("/api/chat_test", { "text": inputText, "history": conversation }).then((response) => {
       console.log(response.data);
+      const gpt_response = response.data;
       setConversation(oldArray => [...oldArray, response.data]);
+      return gpt_response;
+    }).then(gpt_response => { 
+      axios.get("/api/get_speech_token").then((response) => {  
+        if (response.status === 200) {
+          let access_token = response.data;
+          let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
+          speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
+          
+          let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+          synthesizer.speakTextAsync(gpt_response.content, function (result) {
+            console.log("log:");
+            console.log(result);
+            synthesizer.close();
+            synthesizer = undefined;
+          }, function (err) {
+            console.log("error:");
+            console.log(err);
+            synthesizer.close();
+            synthesizer = undefined;
+          });
+        }
+      });
     });
+
+    // text to speech 
+
   };
 
   const renderMessage = (msg:any) => {
@@ -78,6 +107,18 @@ export default function App(){
     </div>
       </>)
   }
+
+  //load azure speech javascript
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.src = 'https://aka.ms/csspeech/jsbrowserpackageraw';
+    script.async = true;
+    document.body.appendChild(script);
+
+    return () => {
+      document.body.removeChild(script);
+    };
+  }, []);
 
   return (
     <ThemeProvider>
