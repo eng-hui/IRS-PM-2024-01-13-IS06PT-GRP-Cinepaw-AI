@@ -15,7 +15,7 @@ import {
   
 } from '@lobehub/ui';
 import { Logo, SideNav } from '@lobehub/ui';
-import { Eraser, Languages } from 'lucide-react';
+import { Eraser, Languages, MicIcon, MicOff, LucideIcon } from 'lucide-react';
 import { Flexbox } from 'react-layout-kit';
 import { ThemeProvider } from '@lobehub/ui';
 import { useState, useRef, useEffect} from 'react';
@@ -34,6 +34,10 @@ export default function App(){
   const scrollableRef = useRef<null | HTMLDivElement>(null);
 
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
+  const [micIconRef, setMocIcon] = useState<LucideIcon>(MicOff);
+  const [speechRecognizer, setSpeechRecognizer] = useState<any>(null);
+  const [speechSynthesizer, setSpeechSynthesizer] = useState<any>(null);
+
   useEffect(() => {
     // Check if the ref is attached to an element
     scrollableRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -41,10 +45,10 @@ export default function App(){
 
   const [inputText, setInputText] = useState<string>('');
 
-  const sendMessage = () => {
-    var timestamp=new Date().getTime()
+  const sendMessage = (newMessage?: string) => {
+    let timestamp=new Date().getTime()
     const c: ChatMessage = {
-      content: inputText,
+      content: newMessage || inputText,
       createAt: timestamp,
       extra: {},
       id: timestamp.toString(),
@@ -59,7 +63,7 @@ export default function App(){
     setConversation(oldArray => [...oldArray, c]);
     setInputText('');
 
-    axios.post("/api/chat_test", { "text": inputText, "history": conversation }).then((response) => {
+    axios.post("/api/chat_test", { "text": newMessage || inputText, "history": conversation }).then((response) => {
       console.log(response.data);
       const chatResponse = response.data;
       setConversation(oldArray => [...oldArray, response.data]);
@@ -73,6 +77,7 @@ export default function App(){
           speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
           
           let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+          setSpeechSynthesizer(synthesizer)
           synthesizer.speakTextAsync(chatResponse.content, function (result) {
             console.log("log:");
             console.log(result);
@@ -118,6 +123,50 @@ export default function App(){
     };
   }, []);
 
+  const startSpeechText = ()=>{
+    axios.get("/api/get_speech_token").then((response) => {  
+      if (response.status === 200) {
+        let access_token = response.data;
+        let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
+        speechConfig.speechRecognitionLanguage = "en-US";
+        var audioConfig  = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
+        let recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+        setSpeechRecognizer(recognizer);
+
+        recognizer.startContinuousRecognitionAsync (
+          function () {
+            console.log("mic started");
+          },
+          function (err) {
+            console.log("mic error:");
+            console.log(err);
+            recognizer.close();
+            setMocIcon(MicOff);
+          }
+        );
+
+        recognizer.recognized = (s, e) => {
+          console.log("speech recognised");
+          // speech recognition output
+          if (e.result.text.length > 0 && e.result.text!="undefined" && e.result.text!=""){
+            const newText = e.result.text;
+            console.log(newText);
+            setInputText(newText);
+            console.log(inputText);
+            sendMessage(newText);
+          }
+        }
+      }
+
+
+    });
+  }
+
+  const endSpeechText = ()=>{
+    console.log("end speech to text");
+    speechRecognizer.close();
+  }
+
   return (
     <ThemeProvider>
         <Row>
@@ -149,7 +198,7 @@ export default function App(){
         <Row style={{ marginTop: '20px' }} >
           <Col span={24}>
             <Card style={{backgroundColor: "FFFFFF"}}>
-            <ChatInputArea
+            <ChatInputArea 
               onSend={() => sendMessage()}
               value={inputText}
               onInput={(value) => { setInputText(value) }}
@@ -158,6 +207,17 @@ export default function App(){
                 <ChatInputActionBar
                   leftAddons={
                     <>
+                      <ActionIcon icon={micIconRef} onClick={
+                        () => {
+                          if (micIconRef === MicIcon) {
+                            setMocIcon(MicOff);
+                            endSpeechText();
+                          } else {
+                            setMocIcon(MicIcon);
+                            startSpeechText();
+                          }
+                        }                           
+                       } />
                       <ActionIcon icon={Languages} />
                       <ActionIcon icon={Eraser} onClick={() => { setInputText('') }} />
                       {/* <TokenTag maxValue={5000} value</div>={1000} /> */}
