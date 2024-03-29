@@ -36,7 +36,6 @@ export default function App(){
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
   const [micIconRef, setMocIcon] = useState<LucideIcon>(MicOff);
   const [speechRecognizer, setSpeechRecognizer] = useState<any>(null);
-  const [speechSynthesizer, setSpeechSynthesizer] = useState<any>(null);
 
   useEffect(() => {
     // Check if the ref is attached to an element
@@ -77,7 +76,6 @@ export default function App(){
           speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
           
           let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
-          setSpeechSynthesizer(synthesizer)
           synthesizer.speakTextAsync(chatResponse.content, function (result) {
             console.log("log:");
             console.log(result);
