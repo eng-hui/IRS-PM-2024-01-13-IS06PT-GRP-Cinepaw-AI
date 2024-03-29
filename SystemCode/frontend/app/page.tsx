@@ -61,10 +61,11 @@ export default function App(){
 
     axios.post("/api/chat_test", { "text": inputText, "history": conversation }).then((response) => {
       console.log(response.data);
-      const gpt_response = response.data;
+      const chatResponse = response.data;
       setConversation(oldArray => [...oldArray, response.data]);
-      return gpt_response;
-    }).then(gpt_response => { 
+      return chatResponse;
+    }).then(chatResponse => { 
+      // Text to speech
       axios.get("/api/get_speech_token").then((response) => {  
         if (response.status === 200) {
           let access_token = response.data;
@@ -72,7 +73,7 @@ export default function App(){
           speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
           
           let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
-          synthesizer.speakTextAsync(gpt_response.content, function (result) {
+          synthesizer.speakTextAsync(chatResponse.content, function (result) {
             console.log("log:");
             console.log(result);
             synthesizer.close();
@@ -86,9 +87,6 @@ export default function App(){
         }
       });
     });
-
-    // text to speech 
-
   };
 
   const renderMessage = (msg:any) => {
