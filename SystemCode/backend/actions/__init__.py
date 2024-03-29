@@ -1,8 +1,8 @@
-from actions.search import query_movie_db
+from actions.search import query_movie_db, convert_tmdb_to_mvlen
 
 
 class Action(object):
-	def __init__(self):
+    def __init__(self):
         pass
 
     def execute(self, *args, **kwargs):

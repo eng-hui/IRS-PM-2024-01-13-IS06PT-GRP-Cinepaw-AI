@@ -14,22 +14,24 @@ import {
   
 } from '@lobehub/ui';
 import { Logo, SideNav } from '@lobehub/ui';
-import { Eraser, Languages } from 'lucide-react';
+import { Eraser, Languages, LibraryBig } from 'lucide-react';
 import { Flexbox } from 'react-layout-kit';
 import { ThemeProvider } from '@lobehub/ui';
 import { useState, useRef, useEffect} from 'react';
 import axios from "axios";
-import { Row, Col, Card,Image } from 'antd';
+import { Row, Col, Card,Image, message } from 'antd';
 import { ImageGallery } from '@lobehub/ui';
 import { Block } from './block';
 import { Album, MessageSquare, Settings2 } from 'lucide-react';
 import useSWR from 'swr'
+import test from 'node:test';
 
 
 
 
 
 export default function App(){
+  const [messageApi, contextHolder] = message.useMessage();
   const scrollableRef = useRef<null | HTMLDivElement>(null);
   const [tab, setTab] = useState('chat')
   const [sessionKey, setSessionKey] = useState('')
@@ -50,6 +52,12 @@ export default function App(){
 
   const [inputText, setInputText] = useState<string>('');
 
+  const test = () => {
+    axios.get("/api/recommend").then((response)=>{
+      console.log(response.data)
+      messageApi.success(JSON.stringify(response.data))
+    })
+  }
   const sendMessage = () => {
     var timestamp=new Date().getTime()
     const c: ChatMessage = {
@@ -116,6 +124,7 @@ export default function App(){
 
   return (
     <ThemeProvider>
+      {contextHolder}
         <Row>
         <Col span={3}>
           <Image style={{marginTop: "10px", marginLeft: "10px"}} width={100} src="/Images/cinepaw_logo.webp" alt="logo" />
@@ -160,7 +169,7 @@ export default function App(){
                 <ChatInputActionBar
                   leftAddons={
                     <>
-                      <ActionIcon icon={Languages} />
+                      <ActionIcon icon={LibraryBig} onClick={() => { test() }}/>
                       <ActionIcon icon={Eraser} onClick={() => { setInputText('') }} />
                       {/* <TokenTag maxValue={5000} value</div>={1000} /> */}
                     </>

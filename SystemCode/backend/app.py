@@ -20,6 +20,8 @@ from chatbot.message import produce_chat_message, consume_chat_message
 from fastapi import BackgroundTasks
 from actions.mark import preference_inteprete
 from actions import query_movie_db
+from db import save_msg, USER_ID
+from model import model_recommend
 
 app = FastAPI()
 
@@ -69,42 +71,6 @@ async def construct_result(text, blocks=None):
     return tmp
 
 
-# @app.post("/chat_test")
-# async def chat_test(input: ChatInput, background_tasks:BackgroundTasks):
-#     print(input)
-#     text = input.text
-#     history = input.history
-#     history = assemble_history_message(history)
-#     chat_result = chat(text, history)
-
-#     logger.info(chat_result)
-#     json_dump = json.dumps(chat_result)
-#     try:
-#         result = json.loads(json.loads(json_dump))
-#     except:
-#         result = json.loads(json_dump)
-
-#     # check intent
-#     intents = result.get("intents", [])
-#     if "expression" in intents:
-#         background_tasks.add_task(preference_inteprete, text=text, history=history)
-
-#     text = result["reply"]
-#     movies = result.get("movies")
-#     logger.info(movies)
-
-#     blocks = []
-#     if movies is not None:
-#         for x in movies:
-#             title = x.get("title")
-#             if title:
-#                 movie = query_movie_db(title)
-#                 movie["block_type"] = "movie"
-#                 blocks.append(movie)
-    
-#     logger.info(blocks)
-#     msg = await construct_result(text, blocks=blocks)
-#     return msg
 
 
 async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
@@ -114,12 +80,15 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     history = assemble_history_message(history)
     chat_result = chat(text, history)
 
+    input_msg = {
+        "content": input.text,
+        "role":"user",
+        "session_key":input.session_key
+    }
+    save_msg(input_msg)
+
     logger.info(chat_result)
-    json_dump = json.dumps(chat_result)
-    try:
-        result = json.loads(json.loads(json_dump))
-    except:
-        result = json.loads(json_dump)
+    result = json.loads(chat_result)
 
     # check intent
     intents = result.get("intents", [])
@@ -141,6 +110,8 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     
     logger.info(blocks)
     msg = await construct_result(text, blocks=blocks)
+    msg["session_key"] = input.session_key
+    save_msg(msg)
     produce_chat_message(msg, session_key=input.session_key)
     return "ok"
 
@@ -179,8 +150,14 @@ def assemble_history_message(raw_history):
         rec_movies = "Recommend Movies: "
         for b in x.get("blocks", []):
             if b["block_type"] == "movie":
-                rec_movies += f"<Movie: {b['title']}> "
+                rec_movies += f"<Movie: {b['title']} movie_id:{b['id']}> "
         
         tmp["content"] = x["content"] +"\n===\n" + rec_movies
         result.append(tmp)
     return result
+
+@app.get("/recommend")
+async def recommend():
+    user_id = USER_ID # tmp
+    logger.info("hello")
+    return model_recommend(user_id)
