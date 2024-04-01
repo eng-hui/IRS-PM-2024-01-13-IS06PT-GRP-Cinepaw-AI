@@ -34,7 +34,7 @@ export default function App(){
   const scrollableRef = useRef<null | HTMLDivElement>(null);
 
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
-  const [micIconRef, setMocIcon] = useState<LucideIcon>(MicOff);
+  const [micIconRef, setMicIcon] = useState<LucideIcon>(MicOff);
   const [speechRecognizer, setSpeechRecognizer] = useState<any>(null);
 
   useEffect(() => {
@@ -139,7 +139,7 @@ export default function App(){
             console.log("mic error:");
             console.log(err);
             recognizer.close();
-            setMocIcon(MicOff);
+            setMicIcon(MicOff);
           }
         );
 
@@ -208,10 +208,10 @@ export default function App(){
                       <ActionIcon icon={micIconRef} onClick={
                         () => {
                           if (micIconRef === MicIcon) {
-                            setMocIcon(MicOff);
+                            setMicIcon(MicOff);
                             endSpeechText();
                           } else {
-                            setMocIcon(MicIcon);
+                            setMicIcon(MicIcon);
                             startSpeechText();
                           }
                         }                           
