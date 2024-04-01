@@ -9,9 +9,6 @@ result should be in json format like this:
 {
     "intents": List[str], # User's intention, usable option see below, could be empty or multiple
     "reply": text,
-    "movies": [{
-        "title": str, # title or name of the movie
-    }] # fetch movie info by title, None if intent is "normal_chat"
     "user_comments":[
         {
             "title":str, # movie's title
@@ -29,3 +26,5 @@ result should be in json format like this:
 "hint_for_search_or_recommend": user didn't say it, but maybe we could search or recommend some movies to respond user's input.
 "expression": user express like, dislike, have watched, want to watch a movie, need to take a mark
 </Intention Options>
+
+if "ask_for_search_or_recommend" or "hint_for_search_or_recommend" in intents, tell user to wait a minute let you check first

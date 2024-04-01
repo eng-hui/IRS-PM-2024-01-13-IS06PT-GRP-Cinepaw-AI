@@ -163,3 +163,5 @@ cython_debug/
 SystemCode/experiments/datasets/ml25m
 SystemCode/experiments/datasets/ml-25m*
 
+*/tmp/
+SystemCode/experiments/chroma_data/*

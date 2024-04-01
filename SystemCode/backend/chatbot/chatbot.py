@@ -56,7 +56,12 @@ def client_chat(messages, model_name=None):
 
 
 
-def chat(text, history, template="bear.jinja2"):
+def chat(text, history, template="bear.jinja2", json=False):
+    if json:
+        response_format = {"type": "json_object"}
+    else:
+        response_format = {"type": "text"}
+
     logger.info(history)
     template = jinja_env.get_template(template)
     text = template.render(text=text)
@@ -74,7 +79,9 @@ def chat(text, history, template="bear.jinja2"):
                 "content": text,
             }
         ],
-        model=os.environ.get("DEFAULT_MODEL") or "gpt-3.5-turbo",
+        response_format = response_format,
+        model=os.environ.get("DEFAULT_MODEL") or "gpt-4-turbo-preview",
     )
     text = chat_completion.dict()["choices"][0]["message"]["content"]
     return text
+

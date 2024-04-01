@@ -1,4 +1,4 @@
-from actions.search import query_movie_db, convert_tmdb_to_mvlen
+from actions.search import query_tmdb, convert_tmdb_to_mvlen
 
 
 class Action(object):

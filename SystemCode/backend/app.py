@@ -19,9 +19,10 @@ from kombu import Connection, Exchange, Queue
 from chatbot.message import produce_chat_message, consume_chat_message
 from fastapi import BackgroundTasks
 from actions.mark import preference_inteprete
-from actions import query_movie_db
+from actions import query_tmdb
 from db import save_msg, USER_ID
 from model import model_recommend
+from actions.search import mvlen_filter_search
 
 app = FastAPI()
 
@@ -70,6 +71,19 @@ async def construct_result(text, blocks=None):
         tmp["blocks"] = blocks
     return tmp
 
+async def chat_search(user_id, text, history):
+    # first recall
+    recall_result = model_recommend(user_id=user_id, n_results=50)
+    return recall_result
+
+
+async def query_recall(text, history):
+    chat_result = chat(text, history, json=True, template="query_recall.jinja2")
+    filters = json.loads(chat_result)
+    logger.info(filters)
+    m = mvlen_filter_search(filters)
+    return m
+
 
 
 
@@ -78,7 +92,7 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     text = input.text
     history = input.history
     history = assemble_history_message(history)
-    chat_result = chat(text, history)
+    chat_result = chat(text, history, json=True)
 
     input_msg = {
         "content": input.text,
@@ -95,21 +109,34 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     if "expression" in intents:
         background_tasks.add_task(preference_inteprete, text=text, history=history)
 
-    text = result["reply"]
-    movies = result.get("movies")
-    logger.info(movies)
+    if ("ask_for_search_or_recommend" in intents) or ("hint_for_search_or_recommend" in intents):
+        movies = None
+        reply = result["reply"]
+        msg = await construct_result(reply)
+        produce_chat_message(msg, session_key=input.session_key)
+        rec_result = await chat_search(USER_ID, text, history)
+        filter_result = await query_recall(text, history)
+        rec_result = rec_result[rec_result["movie_id"].isin(set(filter_result["movie_id"]))]
+        logger.info(rec_result)
+        movies = rec_result.head(5).to_dict(orient="records")
 
-    blocks = []
-    if movies is not None:
-        for x in movies:
-            title = x.get("title")
-            if title:
-                movie = query_movie_db(title)
-                movie["block_type"] = "movie"
-                blocks.append(movie)
+        blocks = []
+        if movies is not None:
+            for x in movies:
+                title = x.get("title")
+                if title:
+                    movie = query_tmdb(title.split("(")[0])
+                    if movie:
+                        movie["block_type"] = "movie"
+                        blocks.append(movie)
+        msg = await construct_result("", blocks=blocks)
+        produce_chat_message(msg, session_key=input.session_key)
+        return 
     
-    logger.info(blocks)
-    msg = await construct_result(text, blocks=blocks)
+        
+
+    text = result["reply"]
+    msg = await construct_result(text)
     msg["session_key"] = input.session_key
     save_msg(msg)
     produce_chat_message(msg, session_key=input.session_key)

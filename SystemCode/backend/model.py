@@ -13,12 +13,12 @@ from utils import logger
 pad_sequences = tf.keras.utils.pad_sequences
 SEQ_LEN = 50
 chroma_client = chromadb.PersistentClient(path="../experiments/chroma_data")
-collection = chroma_client.get_or_create_collection("movie_rec")
+collection = chroma_client.get_or_create_collection("movie_rec_25m-2")
 
 
 
 def load_rec_model():
-    user_embedding_model = load_model('../experiments/user_emb.h5', custom_objects)# load_model,just add a parameter
+    user_embedding_model = load_model('../experiments/user_emb_25m-3.h5', custom_objects)# load_model,just add a parameter
     return user_embedding_model
 
 user_embedding_model = load_rec_model()
@@ -42,10 +42,32 @@ def load_user_preference_for_model(user_id):
     return model_input
 
 
-def model_recommend(user_id):
+def model_recommend(user_id, n_results=10):
     model_input = load_user_preference_for_model(user_id)
     logger.info(model_input)
     user_embs = user_embedding_model.predict(model_input)
-    results = [x for x in collection.query(query_embeddings=user_embs[:, 1, :], n_results=5)["metadatas"][0]] + \
-    [x for x in collection.query(query_embeddings=user_embs[:, 0, :], n_results=5)["metadatas"][0]]
-    return results
+    query_result_1 = collection.query(query_embeddings=user_embs[:, 1, :], n_results=n_results)
+    query_result_2 = collection.query(query_embeddings=user_embs[:, 0, :], n_results=n_results)
+    result_1 = []
+    for i,x in enumerate(query_result_1["metadatas"][0]):
+        x["distance"] = query_result_1["distances"][0][i]
+        result_1.append(x)
+
+    result_2 = []
+    for i,x in enumerate(query_result_2["metadatas"][0]):
+        x["distance"] = query_result_2["distances"][0][i]
+        result_2.append(x)
+
+    results = result_1 + result_2
+    logger.info(results)
+    op = []
+    tmp = set()
+    for x in results:
+        if x["movie_id"] not in tmp:
+            tmp.add(x["movie_id"])
+            op.append(x)
+        else:
+            pass
+    
+    df = pd.DataFrame(op).sort_values('distance')
+    return df
