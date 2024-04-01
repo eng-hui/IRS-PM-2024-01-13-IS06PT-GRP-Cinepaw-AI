@@ -1,7 +1,7 @@
 import chromadb
 import uuid
 
-client = chromadb.Client()
+client = chromadb.PersistentClient(path=".")
 collection = client.get_or_create_collection("previous_chats")
 
 
