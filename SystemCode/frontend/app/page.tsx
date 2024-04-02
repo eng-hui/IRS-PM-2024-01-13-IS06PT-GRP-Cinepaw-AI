@@ -69,26 +69,26 @@ export default function App(){
       return chatResponse;
     }).then(chatResponse => { 
       // Text to speech
-      // axios.get("/api/get_speech_token").then((response) => {  
-      //   if (response.status === 200) {
-      //     let access_token = response.data;
-      //     let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
-      //     speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
+      axios.get("/api/get_speech_token").then((response) => {  
+        if (response.status === 200) {
+          let access_token = response.data;
+          let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
+          speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
           
-      //     let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
-      //     synthesizer.speakTextAsync(chatResponse.content, function (result) {
-      //       console.log("log:");
-      //       console.log(result);
-      //       synthesizer.close();
-      //       synthesizer = undefined;
-      //     }, function (err) {
-      //       console.log("error:");
-      //       console.log(err);
-      //       synthesizer.close();
-      //       synthesizer = undefined;
-      //     });
-      //   }
-      // });
+          let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+          synthesizer.speakTextAsync(chatResponse.content, function (result) {
+            console.log("log:");
+            console.log(result);
+            synthesizer.close();
+            synthesizer = undefined;
+          }, function (err) {
+            console.log("error:");
+            console.log(err);
+            synthesizer.close();
+            synthesizer = undefined;
+          });
+        }
+      });
     });
   };
 

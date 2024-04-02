@@ -70,16 +70,17 @@ def chat(text, history, template="bear.jinja2",appendchat_template="appendchat.j
 
     template_text = template.render(text=userinput)
 
-    # TODO: search top 5 historical results 
+    # search top N historical results 
     prevchats_results = retrieve_previouschats(userinput,n_results=5)
     if len(prevchats_results["documents"]) > 0 and prevchats_results["documents"][0]!=[]:
-        # TODO: merge history to template_text(current query) as content
+        # merge history to template_text(current query) as content
         appendchat_template = jinja_env.get_template(appendchat_template)
         # append previous chat to current chat
         template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput)
 
     chat_completion = client.chat.completions.create(
-        messages=[
+        messages=history
+        +[
             {
                 "role": "user",
                 "content": template_text,
@@ -88,12 +89,12 @@ def chat(text, history, template="bear.jinja2",appendchat_template="appendchat.j
         model=os.environ.get("DEFAULT_MODEL") or "gpt-3.5-turbo",
     )
     output_text = chat_completion.dict()["choices"][0]["message"]["content"]
-
-    # convert and embed current enquiry + reply then store to vector db
+    # fix null values
+    output_text = output_text.replace("null","[]")
+    # convert and embed current enquiry + reply as previous chat then store to vector db for future retrieval
     reply = json.loads(output_text)["reply"]
     prevchat_template = jinja_env.get_template(prevchat_template)
     prevchat = prevchat_template.render(text=userinput, reply=reply)
-    # TODO: embed prevchat to chromadb
     store_previouschat(prevchat)
 
     return output_text
