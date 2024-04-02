@@ -73,13 +73,17 @@ async def construct_result(text, blocks=None):
 
 @app.post("/chat_test")
 async def chat_test(input: ChatInput, background_tasks:BackgroundTasks):
-    print(input)
+    logger.info("==================input==================")
+    logger.info(input)
+    logger.info("==================end of input==================")
     text = input.text
     history = input.history
     history = assemble_history_message(history)
     chat_result = chat(text, history)
 
+    logger.info("==================output==================")
     logger.info(chat_result)
+    logger.info("==================end of output==================")
     json_dump = json.dumps(chat_result)
     try:
         result = json.loads(json.loads(json_dump))

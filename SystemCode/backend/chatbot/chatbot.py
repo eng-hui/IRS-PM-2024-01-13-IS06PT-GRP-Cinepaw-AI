@@ -3,10 +3,17 @@ from openai import OpenAI,AzureOpenAI
 # from anthropic import Anthropic
 from jinja2 import Environment, FileSystemLoader, Template, meta, select_autoescape
 from utils import logger
+import json
+from chatbot.previouschat import store_previouschat,retrieve_previouschats 
+
+# get template from relative path for debug mode
+file_location = os.path.abspath(__file__)
+templates_folder = os.path.join(os.path.dirname(file_location),"..","templates")    
 
 jinja_env = Environment(
-    loader=FileSystemLoader("templates"), autoescape=select_autoescape()
+    loader=FileSystemLoader(templates_folder), autoescape=select_autoescape()
 )
+
 
 
 backend = os.environ.get("DEFAULT_LLM_ENDPOINT") or "openai"
@@ -56,25 +63,38 @@ def client_chat(messages, model_name=None):
 
 
 
-def chat(text, history, template="bear.jinja2"):
+def chat(text, history, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2"):
     logger.info(history)
     template = jinja_env.get_template(template)
-    text = template.render(text=text)
+    userinput = text
+
+    template_text = template.render(text=userinput)
+
+    # search top N historical results 
+    prevchats_results = retrieve_previouschats(userinput,n_results=5)
+    if len(prevchats_results["documents"]) > 0 and prevchats_results["documents"][0]!=[]:
+        # merge history to template_text(current query) as content
+        appendchat_template = jinja_env.get_template(appendchat_template)
+        # append previous chat to current chat
+        template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput)
+
     chat_completion = client.chat.completions.create(
-        messages=[
+        messages=history
+        +[
             {
-                "role": "system",
-                "content": "you are cinebear, a happy bear who love movies and love to share with friends",
-            }
-        ]
-        + history
-        + [
-            {
-                "role": "system",
-                "content": text,
+                "role": "user",
+                "content": template_text,
             }
         ],
         model=os.environ.get("DEFAULT_MODEL") or "gpt-3.5-turbo",
     )
-    text = chat_completion.dict()["choices"][0]["message"]["content"]
-    return text
+    output_text = chat_completion.dict()["choices"][0]["message"]["content"]
+    # fix null values
+    output_text = output_text.replace("null","[]")
+    # convert and embed current enquiry + reply as previous chat then store to vector db for future retrieval
+    reply = json.loads(output_text)["reply"]
+    prevchat_template = jinja_env.get_template(prevchat_template)
+    prevchat = prevchat_template.render(text=userinput, reply=reply)
+    store_previouschat(prevchat)
+
+    return output_text

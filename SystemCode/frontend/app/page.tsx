@@ -150,7 +150,7 @@ export default function App(){
             const newText = e.result.text;
             console.log(newText);
             setInputText(newText);
-            console.log(inputText);
+            // console.log(inputText);
             sendMessage(newText);
           }
         }
