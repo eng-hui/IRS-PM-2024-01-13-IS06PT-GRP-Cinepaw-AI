@@ -1,7 +1,7 @@
 import chromadb
 import uuid
 
-client = chromadb.PersistentClient(path=".")
+client = chromadb.PersistentClient(path="./database")
 collection = client.get_or_create_collection("previous_chats")
 
 
@@ -23,7 +23,7 @@ def store_previouschat(prevchat, username=None):
 # Function to retrieve previous chats based on a query
 def retrieve_previouschats(query, n_results=5, username=None):
     """
-    Retrieve previous chats based on a query.
+    Retrieve previous chats based on a query.git
     
     Args:
         query (str): The query to search for previous chats.
