@@ -94,35 +94,34 @@ export default function App(){
     setInputText('');
     axios.post("/api/chat_input", { "text": inputText, "history": conversation, "session_key":sessionKey}).then((response) => {
       console.log(response.data);
-      // setConversation(oldArray => [...oldArray, response.data]);
     });
-    axios.post("/api/chat_test", { "text": newMessage || inputText, "history": conversation }).then((response) => {
-      console.log(response.data);
-      const chatResponse = response.data;
-      setConversation(oldArray => [...oldArray, response.data]);
-      return chatResponse;
-    }).then(chatResponse => { 
-      // Text to speech
-      axios.get("/api/get_speech_token").then((response) => {  
-        if (response.status === 200) {
-          let access_token = response.data;
-          let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
-          speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
+    // axios.post("/api/chat_test", { "text": newMessage || inputText, "history": conversation }).then((response) => {
+    //   console.log(response.data);
+    //   const chatResponse = response.data;
+    //   setConversation(oldArray => [...oldArray, response.data]);
+    //   return chatResponse;
+    // }).then(chatResponse => { 
+    //   // Text to speech
+    //   axios.get("/api/get_speech_token").then((response) => {  
+    //     if (response.status === 200) {
+    //       let access_token = response.data;
+    //       let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
+    //       speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
           
-          let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
-          synthesizer.speakTextAsync(chatResponse.content, function (result) {
-            console.log("log:");
-            console.log(result);
-            synthesizer.close();
-            synthesizer = undefined;
-          }, function (err) {
-            console.log("error:");
-            console.log(err);
-            synthesizer.close();
-            synthesizer = undefined;
-          });
-        }
-      });
+    //       let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+    //       synthesizer.speakTextAsync(chatResponse.content, function (result) {
+    //         console.log("log:");
+    //         console.log(result);
+    //         synthesizer.close();
+    //         synthesizer = undefined;
+    //       }, function (err) {
+    //         console.log("error:");
+    //         console.log(err);
+    //         synthesizer.close();
+    //         synthesizer = undefined;
+    //       });
+    //     }
+      // });
   };
 
   const renderMessage = (msg:any) => {
