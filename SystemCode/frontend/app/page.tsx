@@ -26,7 +26,10 @@ import { Block } from './block';
 import { Album, MessageSquare, Settings2 } from 'lucide-react';
 import useSWR from 'swr'
 import { Modal } from '@lobehub/ui';
+import { access } from 'fs';
 import { Content } from 'next/font/google';
+
+
 
 
 export default function App(){
@@ -65,15 +68,14 @@ export default function App(){
 
   const [inputText, setInputText] = useState<string>('');
 
+
   const test = () => {
     axios.get("/api/recommend").then((response)=>{
       console.log(response.data)
       messageApi.success(JSON.stringify(response.data))
     })
   }
-  const sendMessage = () => {
-    var timestamp=new Date().getTime()
-    const sendMessage = (newMessage?: string) => {
+  const sendMessage = (newMessage?: string) => {
     let timestamp=new Date().getTime()
     const c: ChatMessage = {
       content: newMessage || inputText,
@@ -90,11 +92,10 @@ export default function App(){
 
     setConversation(oldArray => [...oldArray, c]);
     setInputText('');
-
     axios.post("/api/chat_input", { "text": inputText, "history": conversation, "session_key":sessionKey}).then((response) => {
       console.log(response.data);
       // setConversation(oldArray => [...oldArray, response.data]);
-
+    });
     axios.post("/api/chat_test", { "text": newMessage || inputText, "history": conversation }).then((response) => {
       console.log(response.data);
       const chatResponse = response.data;
@@ -122,7 +123,6 @@ export default function App(){
           });
         }
       });
-    });
   };
 
   const renderMessage = (msg:any) => {
@@ -141,6 +141,8 @@ export default function App(){
     </div>
       </>)
   }
+
+
 
 
   //fetch result
@@ -164,7 +166,6 @@ export default function App(){
     return {"data":data, "error":terror}
   }
   const { data, error} = useSWR("/api/sub_message/"+String(sessionKey), fetcher, { refreshInterval: 1000 });
-
   //load azure speech javascript
   useEffect(() => {
     const script = document.createElement('script');
