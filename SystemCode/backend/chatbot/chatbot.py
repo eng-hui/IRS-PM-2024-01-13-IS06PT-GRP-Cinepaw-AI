@@ -65,12 +65,12 @@ def client_chat(messages, model_name=None):
 
 
 
-def chat(text, history, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2"):
+def chat(text, history, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2", **kwargs):
     logger.info(history)
     template = jinja_env.get_template(template)
     userinput = text
 
-    template_text = template.render(text=userinput)
+    template_text = template.render(text=userinput, **kwargs)
 
     # search top N historical results 
     prevchats_results = retrieve_previouschats(userinput,n_results=5)
@@ -107,7 +107,7 @@ class Chatbot(object):
         self.session_key = session_key
         self._redis = get_redis_conn()
 
-    def chat(self, text, history=None, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2"):
+    def chat(self, text, history=None, require_json=True, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2", **kwargs):
         if require_json:
             response_format = {"type": "json_object"}
         else:
@@ -143,10 +143,12 @@ class Chatbot(object):
         )
         # fix null values
         if require_json:
-            output_text  = json.loads(chat_completion.dict()["choices"][0]["message"]["content"])
+            output_text = chat_completion.dict()["choices"][0]["message"]["content"]
             output_text = output_text.replace("null","[]")
+            output_text  = json.loads(output_text)
+            
             # convert and embed current enquiry + reply as previous chat then store to vector db for future retrieval
-            reply = json.loads(output_text)["reply"]
+            reply = output_text.get("reply")
             prevchat_template = jinja_env.get_template(prevchat_template)
             prevchat = prevchat_template.render(text=userinput, reply=reply)
             store_previouschat(prevchat)

@@ -94,12 +94,12 @@ async def construct_result(text, blocks=None):
 #     return recall_result
 
 
-async def query_recall(text, history):
-    chat_result = chat(text, history, json=True, template="query_recall.jinja2")
-    filters = json.loads(chat_result)
-    logger.info(filters)
-    m = mvlen_filter_search(filters)
-    return m
+# async def query_recall(text, history):
+#     chat_result = chat(text, history, json=True, template="query_recall.jinja2")
+#     filters = json.loads(chat_result)
+#     logger.info(filters)
+#     m = mvlen_filter_search(filters)
+#     return m
 
 
 
@@ -114,7 +114,7 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     history = assemble_history_message(history)
 
     chatbot = Chatbot(session_key=input.session_key)
-    chat_result = chatbot.chat(text, history, json=True)
+    chat_result = chatbot.chat(text, history, require_json=True)
 
     input_msg = {
         "content": input.text,
@@ -230,7 +230,7 @@ async def get_speech_token():
     response = requests.post(fetch_token_url, headers=headers)
     access_token = str(response.text)
     return access_token
-    
+
 def query_movie_db(title):
     import urllib.parse
     urllib.parse.quote(title)
