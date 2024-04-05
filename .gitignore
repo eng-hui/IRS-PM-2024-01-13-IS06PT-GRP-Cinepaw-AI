@@ -167,3 +167,4 @@ SystemCode/experiments/datasets/ml-25m*
 SystemCode/experiments/chroma_data/*
 chroma.sqlite3
 *.bin
+tmp.db
