@@ -10,6 +10,10 @@
 ---
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
+In today's modern households, the television has become an indispensable companion, woven seamlessly into the fabric of our daily lives. From the joyous laughter of young adolescents immersed in colorful cartoons to the captivating narratives that engage adults in comedy, drama, and even action, film and television have become essential pillars of our lifestyles. Whether it's for relaxation, bonding with friends, or simply passing time, the screen holds the power to transport us to worlds both familiar and fantastical, offering moments of escape and connection in equal measure.
+
+In an era where entertainment options abound, the dilemma of what to watch often leaves us spoiled for choice. Companies like Netflix have revolutionized the viewing experience with innovative recommender systems, analyzing our viewing history to predict and suggest movies that align with our preferences. Yet, behind the scenes, much of this magic unfolds in the backend, leaving us with a sense of detachment and a lack of control over the content selection process.
+
 
 [Place Holder]
 Singapore ranks amongst countries with the highest population density in the world. In a bid to have firm control over long term urban planning, the Singapore government came up with the “Built to Order” (abbreviated BTO) initiative back in 2001. These are new Housing Development Board (HDB) flats tightly controlled by their eligibility and quantity released every year. In more recent years, the modern BTO scheme in Singapore requires a waiting period of 3-4 years, and is generally targeted at young Singaporean couples looking to purchase their first property and set up a family. Nationality and income ceilings are some of the broad filters that determine one’s eligibility for the highly sought after projects. 
