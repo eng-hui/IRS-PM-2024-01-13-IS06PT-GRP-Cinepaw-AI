@@ -95,33 +95,6 @@ export default function App(){
     axios.post("/api/chat_input", { "text": inputText, "history": conversation, "session_key":sessionKey}).then((response) => {
       console.log(response.data);
     });
-    // axios.post("/api/chat_test", { "text": newMessage || inputText, "history": conversation }).then((response) => {
-    //   console.log(response.data);
-    //   const chatResponse = response.data;
-    //   setConversation(oldArray => [...oldArray, response.data]);
-    //   return chatResponse;
-    // }).then(chatResponse => { 
-    //   // Text to speech
-    //   axios.get("/api/get_speech_token").then((response) => {  
-    //     if (response.status === 200) {
-    //       let access_token = response.data;
-    //       let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
-    //       speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
-          
-    //       let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
-    //       synthesizer.speakTextAsync(chatResponse.content, function (result) {
-    //         console.log("log:");
-    //         console.log(result);
-    //         synthesizer.close();
-    //         synthesizer = undefined;
-    //       }, function (err) {
-    //         console.log("error:");
-    //         console.log(err);
-    //         synthesizer.close();
-    //         synthesizer = undefined;
-    //       });
-    //     }
-      // });
   };
 
   const renderMessage = (msg:any) => {
@@ -154,6 +127,28 @@ export default function App(){
         data = response.data;
         if(data.success){
           setConversation(oldArray => [...oldArray, response.data.msg])
+          let chatresponse = response.data.msg
+          axios.get("/api/get_speech_token").then((response) => {  
+            if (response.status === 200) {
+              let access_token = response.data;
+              let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
+              speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
+
+              let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
+              synthesizer.speakTextAsync(chatresponse.content, function (result) {
+                console.log("log:");
+                console.log(result);
+                synthesizer.close();
+                synthesizer = undefined;
+              }, function (err) {
+                console.log("error:");
+                console.log(err);
+                synthesizer.close();
+                synthesizer = undefined;
+              });
+            }
+          });
+           
         }else{
           console.log(data)
         }
@@ -233,16 +228,9 @@ export default function App(){
       >
         <p>hello</p>
       </Modal>
-        <Row>
-        <Col span={3}>
-          <Image style={{marginTop: "10px", marginLeft: "10px"}} width={100} src="/Images/cinepaw_logo.webp" alt="logo" />
-        </Col>
-        <Col span={21}>
-        </Col> 
-      </Row>
       <Row><Col span={1}><SideNav
         style={{"width": "100%"}}       
-        avatar={<Logo size={40} />}
+        avatar={<img src="Images/cinepaw_logo.webp"/>}
       topActions={
         <>
       <ActionIcon

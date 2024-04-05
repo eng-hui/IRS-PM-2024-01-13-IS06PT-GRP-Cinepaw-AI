@@ -9,7 +9,12 @@ from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import numpy as np
 from utils import logger
-movies = pd.read_csv("../experiments/datasets/ml-25m/xdf.csv")
+import os 
+file_location = os.path.abspath(__file__)
+exp_folder = os.path.join(os.path.dirname(file_location),"..","experiments")    
+
+
+movies = pd.read_csv(os.path.join(exp_folder,"datasets","ml-25m","xdf.csv"))
 movies["movie_id"] = movies["movieId"]
 lbe = LabelEncoder()
 movies["raw_genres"] = movies["genres"].copy()
@@ -18,13 +23,12 @@ movies["genres"] = lbe.fit_transform(movies["genres"]) + 1
 
 pad_sequences = tf.keras.utils.pad_sequences
 SEQ_LEN = 50
-chroma_client = chromadb.PersistentClient(path="../experiments/chroma_data")
+chroma_client = chromadb.PersistentClient(path=os.path.join(exp_folder,"chroma_data"))
 collection = chroma_client.get_or_create_collection("movie_rec_25m_0402")
 
 
-
 def load_rec_model():
-    user_embedding_model = load_model('../experiments/user_emb_25m_0402.h5', custom_objects)# load_model,just add a parameter
+    user_embedding_model = load_model(os.path.join(exp_folder,"user_emb_25m_0402.h5"), custom_objects)# load_model,just add a parameter
     return user_embedding_model
 
 user_embedding_model = load_rec_model()

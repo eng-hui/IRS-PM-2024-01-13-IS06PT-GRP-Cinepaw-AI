@@ -6,14 +6,15 @@ from utils import logger
 import chromadb
 chroma_client = chromadb.PersistentClient(path="../experiments/chroma_data")
 
-
+file_location = os.path.abspath(__file__)
+exp_folder = os.path.join(os.path.dirname(file_location),"..","..","experiments")    
 
 TMDB_API_KEY = os.getenv("TMDB_API")
 POSTER_URL = "https://media.themoviedb.org/t/p/w440_and_h660_face"
 TMBD_QUERY_API = "https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1"
 mnames = ['movie_id','title','genres']
 # movies = pd.read_csv('../experiments/datasets/ml-1m/movies.dat',sep='::',header=None,names=mnames,encoding="unicode_escape")
-movies = pd.read_csv("../experiments/datasets/ml-25m/xdf.csv")
+movies = pd.read_csv(os.path.join(exp_folder,"datasets","ml-25m","xdf.csv"))
 movies["movie_id"] = movies["movieId"]
 lbe = LabelEncoder()
 movies["raw_genres"] = movies["genres"].copy()
