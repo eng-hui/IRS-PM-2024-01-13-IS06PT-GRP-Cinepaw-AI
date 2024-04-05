@@ -38,6 +38,7 @@ app = FastAPI()
 POSTER_URL = "https://media.themoviedb.org/t/p/w440_and_h660_face"
 TMBD_QUERY_API = "https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1"
 TMDB_API_KEY = os.getenv("TMDB_API")
+AZURESPEECH_API_KEY = os.getenv("AZURESPEECH_API_KEY")
 
 
 @app.exception_handler(RequestValidationError)
@@ -105,6 +106,9 @@ async def query_recall(text, history):
 
 async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     logger.info(input)
+    logger.info("==================input==================")
+    logger.info(input)
+    logger.info("==================end of input==================")
     text = input.text
     history = input.history
     history = assemble_history_message(history)
@@ -119,8 +123,10 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     }
     save_msg(input_msg)
 
+    logger.info("==================output==================")
     logger.info(chat_result)
     result = chat_result
+    logger.info("==================end of output==================")
 
     # check intent
     intents = result.get("intents", [])
@@ -151,7 +157,6 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
         #filters = chatbot.chat(text, history, require_json=True, template="build_query.jinja2")
         #query = filters.get("query")
 
-
         # rec_result = rec_result[rec_result["movie_id"].isin(set(filter_result["movie_id"]))]
         df = rec_result
         # v_result = chroma_movie_query(query)
@@ -174,6 +179,7 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
         rerank_result = chatbot.rerank(text, history,
         candidate_set=df.head(20).to_dict(orient="records"),
         user_history=user_history.head(10).to_dict(orient="records"))
+
 
         blocks = []
         # if movies is not None:
@@ -213,6 +219,29 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     save_msg(msg)
     produce_chat_message(msg, session_key=input.session_key)
     return "ok"
+
+@app.get("/get_speech_token")
+async def get_speech_token():
+    subscription_key = AZURESPEECH_API_KEY
+    fetch_token_url = 'https://southeastasia.api.cognitive.microsoft.com/sts/v1.0/issueToken'
+    headers = {
+        'Ocp-Apim-Subscription-Key': subscription_key
+    }
+    response = requests.post(fetch_token_url, headers=headers)
+    access_token = str(response.text)
+    return access_token
+    
+def query_movie_db(title):
+    import urllib.parse
+    urllib.parse.quote(title)
+    query = f"&query={title}"
+    headers = {
+    "accept": "application/json",
+    "Authorization": f"Bearer {TMDB_API_KEY}"
+    }
+    url = TMBD_QUERY_API + query
+    re = requests.get(url, headers=headers).json()
+    return re.get("results")[0]
 
 @app.post("/chat_input")
 def chat_input(input: ChatInput, background_tasks:BackgroundTasks):

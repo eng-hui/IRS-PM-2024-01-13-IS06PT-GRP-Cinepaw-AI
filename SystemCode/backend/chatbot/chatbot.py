@@ -6,11 +6,16 @@ from utils import logger
 from chatbot.message import produce_chat_message
 from db import get_redis_conn
 import json
+from chatbot.previouschat import store_previouschat,retrieve_previouschats 
 
+# get template from relative path for debug mode
+file_location = os.path.abspath(__file__)
+templates_folder = os.path.join(os.path.dirname(file_location),"..","templates")    
 
 jinja_env = Environment(
-    loader=FileSystemLoader("templates"), autoescape=select_autoescape()
+    loader=FileSystemLoader(templates_folder), autoescape=select_autoescape()
 )
+
 
 
 backend = os.environ.get("DEFAULT_LLM_ENDPOINT") or "openai"
@@ -60,43 +65,49 @@ def client_chat(messages, model_name=None):
 
 
 
-def chat(text, history, template="bear.jinja2", json=False):
-    if json:
-        response_format = {"type": "json_object"}
-    else:
-        response_format = {"type": "text"}
-
+def chat(text, history, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2"):
     logger.info(history)
     template = jinja_env.get_template(template)
-    text = template.render(text=text)
+    userinput = text
+
+    template_text = template.render(text=userinput)
+
+    # search top N historical results 
+    prevchats_results = retrieve_previouschats(userinput,n_results=5)
+    if len(prevchats_results["documents"]) > 0 and prevchats_results["documents"][0]!=[]:
+        # merge history to template_text(current query) as content
+        appendchat_template = jinja_env.get_template(appendchat_template)
+        # append previous chat to current chat
+        template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput)
+
     chat_completion = client.chat.completions.create(
-        messages=[
+        messages=history
+        +[
             {
-                "role": "system",
-                "content": "you are cinebear, a happy bear who love movies and love to share with friends",
-            }
-        ]
-        + history
-        + [
-            {
-                "role": "system",
-                "content": text,
+                "role": "user",
+                "content": template_text,
             }
         ],
         response_format = response_format,
         model=os.environ.get("DEFAULT_MODEL") or "gpt-4-turbo-preview",
     )
-    text = chat_completion.dict()["choices"][0]["message"]["content"]
-    return text
+    output_text = chat_completion.dict()["choices"][0]["message"]["content"]
+    # fix null values
+    output_text = output_text.replace("null","[]")
+    # convert and embed current enquiry + reply as previous chat then store to vector db for future retrieval
+    reply = json.loads(output_text)["reply"]
+    prevchat_template = jinja_env.get_template(prevchat_template)
+    prevchat = prevchat_template.render(text=userinput, reply=reply)
+    store_previouschat(prevchat)
 
-
+    return output_text
 
 class Chatbot(object):
     def __init__(self, session_key):
         self.session_key = session_key
         self._redis = get_redis_conn()
 
-    def chat(self, text, history=None, require_json=True, template="bear.jinja2", **kwargs):
+    def chat(self, text, history=None, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2"):
         if require_json:
             response_format = {"type": "json_object"}
         else:
@@ -107,30 +118,78 @@ class Chatbot(object):
 
         logger.info(history)
         template = jinja_env.get_template(template)
-        text = template.render(text=text, **kwargs)
-        logger.info(text)
+        userinput = text
+
+        template_text = template.render(text=userinput)
+
+        # search top N historical results 
+        prevchats_results = retrieve_previouschats(userinput,n_results=5)
+        if len(prevchats_results["documents"]) > 0 and prevchats_results["documents"][0]!=[]:
+            # merge history to template_text(current query) as content
+            appendchat_template = jinja_env.get_template(appendchat_template)
+            # append previous chat to current chat
+            template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput)
+
         chat_completion = client.chat.completions.create(
-            messages=[
+            messages=history
+            +[
                 {
-                    "role": "system",
-                    "content": "you are cinebear, a happy bear who love movies and love to share with friends",
-                }
-            ]
-            + history
-            + [
-                {
-                    "role": "system",
-                    "content": text,
+                    "role": "user",
+                    "content": template_text,
                 }
             ],
             response_format = response_format,
             model=os.environ.get("DEFAULT_MODEL") or "gpt-4-turbo-preview",
         )
+        # fix null values
         if require_json:
-            result = json.loads(chat_completion.dict()["choices"][0]["message"]["content"])
+            output_text  = json.loads(chat_completion.dict()["choices"][0]["message"]["content"])
+            output_text = output_text.replace("null","[]")
+            # convert and embed current enquiry + reply as previous chat then store to vector db for future retrieval
+            reply = json.loads(output_text)["reply"]
+            prevchat_template = jinja_env.get_template(prevchat_template)
+            prevchat = prevchat_template.render(text=userinput, reply=reply)
+            store_previouschat(prevchat)
         else:
-            result = chat_completion.dict()["choices"][0]["message"]["content"]
-        return result
+            output_text  = chat_completion.dict()["choices"][0]["message"]["content"]
+
+        return output_text
+
+    # def chat(self, text, history=None, require_json=True, template="bear.jinja2", **kwargs):
+        # if require_json:
+        #     response_format = {"type": "json_object"}
+        # else:
+        #     response_format = {"type": "text"}
+
+        # if history is None:
+        #     history = self.get_status("history")
+
+    #     logger.info(history)
+    #     template = jinja_env.get_template(template)
+    #     text = template.render(text=text, **kwargs)
+    #     logger.info(text)
+    #     chat_completion = client.chat.completions.create(
+    #         messages=[
+    #             {
+    #                 "role": "system",
+    #                 "content": "you are cinebear, a happy bear who love movies and love to share with friends",
+    #             }
+    #         ]
+    #         + history
+    #         + [
+    #             {
+    #                 "role": "system",
+    #                 "content": text,
+    #             }
+    #         ],
+    #         response_format = response_format,
+    #         model=os.environ.get("DEFAULT_MODEL") or "gpt-4-turbo-preview",
+    #     )
+        # if require_json:
+        #     result = json.loads(chat_completion.dict()["choices"][0]["message"]["content"])
+        # else:
+        #     result = chat_completion.dict()["choices"][0]["message"]["content"]
+    #     return result
     
     def rerank(self, text, history=None, candidate_set=None, user_history=None):
         result = self.chat(
