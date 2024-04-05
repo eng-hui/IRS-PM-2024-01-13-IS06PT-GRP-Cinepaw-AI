@@ -107,7 +107,7 @@ class Chatbot(object):
         self.session_key = session_key
         self._redis = get_redis_conn()
 
-    def chat(self, text, history=None, require_json=False, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2", **kwargs):
+    def chat(self, text, history=None, require_json=True, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2", **kwargs):
         if require_json:
             response_format = {"type": "json_object"}
         else:
@@ -130,6 +130,7 @@ class Chatbot(object):
             # append previous chat to current chat
             template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput)
 
+        
         chat_completion = client.chat.completions.create(
             messages=history
             +[

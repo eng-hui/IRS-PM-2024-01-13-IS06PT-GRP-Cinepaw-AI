@@ -10,7 +10,7 @@ import redis
 USER_ID=10000 # tmp later change to true user_id
 
 # tmp
-engine = sqlalchemy.create_engine("sqlite:////tmp.db")
+engine = sqlalchemy.create_engine("sqlite:///./tmp.db")
 Base = declarative_base()
 
 class UserPreference(Base):
