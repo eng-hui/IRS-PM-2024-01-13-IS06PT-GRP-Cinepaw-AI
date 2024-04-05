@@ -21,8 +21,17 @@ from fastapi import BackgroundTasks
 from actions.mark import preference_inteprete
 from actions import query_tmdb
 from db import save_msg, USER_ID
-from model import model_recommend
-from actions.search import mvlen_filter_search
+from model import model_recommend, get_user_embedding, load_user_history
+from actions.search import mvlen_filter_search, query_tmdb_detail, chroma_movie_query
+from actions.search import movies as mvlen
+import pandas as pd
+from chatbot.chatbot import Chatbot
+import chromadb
+from scipy.spatial.distance import cdist
+import numpy as np
+
+chroma_client = chromadb.PersistentClient(path="../experiments/chroma_data")
+collection = chroma_client.get_or_create_collection("movie_rec_25m_0402")
 
 app = FastAPI()
 
@@ -71,10 +80,17 @@ async def construct_result(text, blocks=None):
         tmp["blocks"] = blocks
     return tmp
 
-async def chat_search(user_id, text, history):
-    # first recall
-    recall_result = model_recommend(user_id=user_id, n_results=50)
-    return recall_result
+# async def chat_search(user_id, text, history):
+#     # first recall
+
+#     # recommend by user history
+#     recall_result = model_recommend(user_id=user_id, n_results=100)
+
+#     # recommend by query
+#     vector_match = await vector_search(query)
+
+
+#     return recall_result
 
 
 async def query_recall(text, history):
@@ -92,7 +108,9 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     text = input.text
     history = input.history
     history = assemble_history_message(history)
-    chat_result = chat(text, history, json=True)
+
+    chatbot = Chatbot(session_key=input.session_key)
+    chat_result = chatbot.chat(text, history, json=True)
 
     input_msg = {
         "content": input.text,
@@ -102,7 +120,7 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
     save_msg(input_msg)
 
     logger.info(chat_result)
-    result = json.loads(chat_result)
+    result = chat_result
 
     # check intent
     intents = result.get("intents", [])
@@ -114,27 +132,81 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
         reply = result["reply"]
         msg = await construct_result(reply)
         produce_chat_message(msg, session_key=input.session_key)
-        rec_result = await chat_search(USER_ID, text, history)
-        filter_result = await query_recall(text, history)
-        rec_result = rec_result[rec_result["movie_id"].isin(set(filter_result["movie_id"]))]
+
+        # hard filter
+        user_history = load_user_history(USER_ID)
+        filters = chatbot.chat(text, history, require_json=True, template="build_query.jinja2")
+        filter_result =  mvlen_filter_search(filters)
+        matrix = collection.get(ids=filter_result["movieId"].apply(str).tolist(), include=["embeddings"])
+        matrix = np.array(matrix["embeddings"])
+        user_emb = get_user_embedding(USER_ID)
+        distance = cdist(np.array(user_emb), matrix).min(axis=0)
+        filter_result["distance"] = distance
+        filter_result = filter_result.sort_values("distance")
+
+        # rec & search
+        rec_result = filter_result.head(200)
         logger.info(rec_result)
-        movies = rec_result.head(5).to_dict(orient="records")
+        # v_result = vector_search(query)
+        #filters = chatbot.chat(text, history, require_json=True, template="build_query.jinja2")
+        #query = filters.get("query")
+
+
+        # rec_result = rec_result[rec_result["movie_id"].isin(set(filter_result["movie_id"]))]
+        df = rec_result
+        # v_result = chroma_movie_query(query)
+        # v_result["v_score"] = 0
+        # rec_result["v_score"] = 1
+        # logger.info(v_result)
+        # df = pd.merge(v_result, rec_result[["movie_id", "distance"]], how="left")
+        df["movieId"] = df["movie_id"]
+        # df["distance"] = df["distance"].fillna(df["distance"].max())
+        #df = pd.concat([df, rec_result])
+        df = df.sort_values(["hot", "grade"], ascending=False)
+
+
+        # rank
+        # df = pd.merge(df, mvlen[["movieId", "tmdbId"]], on="movieId", how="left")
+        # logger.info(df.sort_values(["v_score", "distance"]).head(5))
+        # movies = df.sort_values(["v_score", "distance"]).head(5).to_dict(orient="records")
+        movies = df.head(5).to_dict(orient="records")
+        logger.info(df[["title", "tag", "movieId", "tmdbId"]].head(5))
+        rerank_result = chatbot.rerank(text, history,
+        candidate_set=df.head(20).to_dict(orient="records"),
+        user_history=user_history.head(10).to_dict(orient="records"))
 
         blocks = []
+        # if movies is not None:
+        #     for x in movies:
+        #         title = x.get("title")
+        #         if title:
+        #             movie = query_tmdb(title.split("(")[0])
+        #             if movie:
+        #                 movie["block_type"] = "movie"
+        #                 blocks.append(movie)
+
+
+        # fetch detail from tmdb
+        movies = rerank_result.get("movies")
         if movies is not None:
             for x in movies:
-                title = x.get("title")
-                if title:
+                movie = None
+                tmdbId = x.get("tmdbId", None)
+                if tmdbId is not None:
+                    movie = query_tmdb_detail(id=tmdbId)
+                else:
+                    title = x.get("title")
                     movie = query_tmdb(title.split("(")[0])
-                    if movie:
-                        movie["block_type"] = "movie"
-                        blocks.append(movie)
-        msg = await construct_result("", blocks=blocks)
+
+                if movie:
+                    movie["block_type"] = "movie"
+                    blocks.append(movie)
+        logger.info(blocks)
+        msg = await construct_result(rerank_result.get("reply"), blocks=blocks)
         produce_chat_message(msg, session_key=input.session_key)
         return 
     
         
-
     text = result["reply"]
     msg = await construct_result(text)
     msg["session_key"] = input.session_key

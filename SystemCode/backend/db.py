@@ -6,6 +6,7 @@ from sqlalchemy import Column
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import Session
 import json
+import redis
 USER_ID=10000 # tmp later change to true user_id
 
 # tmp
@@ -55,4 +56,16 @@ def save_msg(msg):
     return {"status": "ok", "id":obj_id}
 
 
+REDIS_HOST = 'localhost'
+redis_pool = None
+def init_redis():
+    import os
+    global redis_pool
+    print("PID %d: initializing redis pool..." % os.getpid())
+    redis_pool = redis.ConnectionPool(host=REDIS_HOST, port=6379, db=0,  decode_responses=True)
+init_redis()
+
+def get_redis_conn():
+    redis_conn = redis.Redis(connection_pool=redis_pool)
+    return redis_conn
 

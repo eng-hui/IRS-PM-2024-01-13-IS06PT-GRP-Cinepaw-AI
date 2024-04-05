@@ -19,15 +19,12 @@ import { Flexbox } from 'react-layout-kit';
 import { ThemeProvider } from '@lobehub/ui';
 import { useState, useRef, useEffect} from 'react';
 import axios from "axios";
-import { Row, Col, Card,Image, message } from 'antd';
+import { Row, Col, Card,Image, message, Button } from 'antd';
 import { ImageGallery } from '@lobehub/ui';
 import { Block } from './block';
 import { Album, MessageSquare, Settings2 } from 'lucide-react';
 import useSWR from 'swr'
-import test from 'node:test';
-
-
-
+import { Modal } from '@lobehub/ui';
 
 
 export default function App(){
@@ -42,6 +39,17 @@ export default function App(){
     )
   }, []);
   console.log(sessionKey)
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
 
 
   const [conversation, setConversation] = useState<ChatMessage[]>([]);
@@ -100,6 +108,8 @@ export default function App(){
   }
 
 
+
+
   //fetch result
   const [getFlag, setGetFlag] = useState(true)
   const fetcher = (url:string) => {
@@ -125,6 +135,15 @@ export default function App(){
   return (
     <ThemeProvider>
       {contextHolder}
+      <Modal
+        footer={<Button type={'primary'}>Demo</Button>}
+        onCancel={handleCancel}
+        onOk={handleOk}
+        open={isModalOpen}
+        title="Basic Modal"
+      >
+        <p>hello</p>
+      </Modal>
         <Row>
         <Col span={3}>
           <Image style={{marginTop: "10px", marginLeft: "10px"}} width={100} src="/Images/cinepaw_logo.webp" alt="logo" />
@@ -135,13 +154,23 @@ export default function App(){
       <Row><Col span={1}><SideNav
         style={{"width": "100%"}}       
         avatar={<Logo size={40} />}
-      topActions={<ActionIcon
+      topActions={
+        <>
+      <ActionIcon
         active={tab === 'chat'}
         icon={MessageSquare}
         onClick={() => setTab('chat')}
         size="large"
-      />}
-      bottomActions={<ActionIcon icon={Settings2} />}
+      />
+      <ActionIcon
+        active={tab === 'market'}
+        icon={Album}
+        onClick={() => setTab('market')}
+        size="large"
+      />
+      </>
+    }
+      bottomActions={<ActionIcon icon={Settings2} onClick={showModal}/>}
       ></SideNav></Col>
       <Col span={23}>
         <Row>
@@ -169,7 +198,7 @@ export default function App(){
                 <ChatInputActionBar
                   leftAddons={
                     <>
-                      <ActionIcon icon={LibraryBig} onClick={() => { test() }}/>
+                      {/* <ActionIcon icon={LibraryBig} onClick={() => { test() }}/> */}
                       <ActionIcon icon={Eraser} onClick={() => { setInputText('') }} />
                       {/* <TokenTag maxValue={5000} value</div>={1000} /> */}
                     </>
