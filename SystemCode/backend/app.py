@@ -198,7 +198,7 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
             for x in movies:
                 movie = None
                 tmdbId = x.get("tmdbId", None)
-                if tmdbId is not None:
+                if (tmdbId is not None) and (tmdbId!=[]):
                     movie = query_tmdb_detail(id=tmdbId)
                 else:
                     title = x.get("title")
