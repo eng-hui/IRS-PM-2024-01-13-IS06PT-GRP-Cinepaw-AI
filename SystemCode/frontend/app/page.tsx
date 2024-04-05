@@ -230,7 +230,7 @@ export default function App(){
       </Modal>
       <Row><Col span={1}><SideNav
         style={{"width": "100%"}}       
-        avatar={<img src="Images/cinepaw_logo.webp"/>}
+        avatar={<img src="images/cinepaw_logo.webp"  />}
       topActions={
         <>
       <ActionIcon
