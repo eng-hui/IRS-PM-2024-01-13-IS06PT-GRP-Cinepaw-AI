@@ -150,6 +150,9 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
         filter_result["distance"] = distance
         filter_result = filter_result.sort_values("distance")
 
+        #tmp 
+        #filter_result = filter_result.sort_values(["hot", "grade"], ascending=False)
+
         # rec & search
         rec_result = filter_result.head(200)
         logger.info(rec_result)
@@ -174,11 +177,17 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
         # df = pd.merge(df, mvlen[["movieId", "tmdbId"]], on="movieId", how="left")
         # logger.info(df.sort_values(["v_score", "distance"]).head(5))
         # movies = df.sort_values(["v_score", "distance"]).head(5).to_dict(orient="records")
-        movies = df.head(5).to_dict(orient="records")
+        # movies = df.head(5).to_dict(orient="records")
         logger.info(df[["title", "tag", "movieId", "tmdbId"]].head(5))
-        rerank_result = chatbot.rerank(text, history,
-        candidate_set=df.head(20).to_dict(orient="records"),
-        user_history=user_history.head(10).to_dict(orient="records"))
+
+        logger.info("===========candidate set========")
+        logger.info(df.head(20)[["title", "distance"]])
+        rerank_result = chatbot.rerank(
+            text, 
+            history,
+            candidate_set=df.head(20).to_dict(orient="records"),
+            user_history=user_history.head(10).to_dict(orient="records")
+        )
 
 
         blocks = []
@@ -206,6 +215,8 @@ async def chat_background(input: ChatInput, background_tasks:BackgroundTasks):
 
                 if movie:
                     movie["block_type"] = "movie"
+                    movie["bear_comment"] = x.get("bear_comment")
+                    movie["debug"] = x
                     blocks.append(movie)
         logger.info(blocks)
         msg = await construct_result(rerank_result.get("reply"), blocks=blocks)

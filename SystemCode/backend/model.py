@@ -18,7 +18,7 @@ movies = pd.read_csv(os.path.join(exp_folder,"datasets","ml-25m","xdf.csv"))
 movies["movie_id"] = movies["movieId"]
 lbe = LabelEncoder()
 movies["raw_genres"] = movies["genres"].copy()
-movies["genres"] = movies["genres"].apply(lambda x:x.split("|")[0])
+#movies["genres"] = movies["genres"].apply(lambda x:x.split("|")[0])
 movies["genres"] = lbe.fit_transform(movies["genres"]) + 1
 
 pad_sequences = tf.keras.utils.pad_sequences

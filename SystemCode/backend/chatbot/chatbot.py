@@ -65,8 +65,12 @@ def client_chat(messages, model_name=None):
 
 
 
-def chat(text, history, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2", **kwargs):
+def chat(text, history, require_json=True, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2", **kwargs):
     logger.info(history)
+    if require_json:
+        response_format = {"type": "json_object"}
+    else:
+        response_format = {"type": "text"}
     template = jinja_env.get_template(template)
     userinput = text
 
@@ -95,7 +99,7 @@ def chat(text, history, template="bear.jinja2",appendchat_template="appendchat.j
     # fix null values
     output_text = output_text.replace("null","[]")
     # convert and embed current enquiry + reply as previous chat then store to vector db for future retrieval
-    reply = json.loads(output_text)["reply"]
+    reply = json.loads(output_text).get("reply")
     prevchat_template = jinja_env.get_template(prevchat_template)
     prevchat = prevchat_template.render(text=userinput, reply=reply)
     store_previouschat(prevchat)
@@ -107,7 +111,10 @@ class Chatbot(object):
         self.session_key = session_key
         self._redis = get_redis_conn()
 
-    def chat(self, text, history=None, require_json=False, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2", **kwargs):
+    def chat_with_history(self):
+        pass
+
+    def chat(self, text, history=None, require_json=True, template="bear.jinja2",appendchat_template="appendchat.jinja2", prevchat_template="prevchat.jinja2", **kwargs):
         if require_json:
             response_format = {"type": "json_object"}
         else:
@@ -120,7 +127,9 @@ class Chatbot(object):
         template = jinja_env.get_template(template)
         userinput = text
 
-        template_text = template.render(text=userinput)
+        logger.info(kwargs.get("candidate_set"))
+        logger.info(kwargs.get("user_history"))
+        template_text = template.render(text=userinput, **kwargs)
 
         # search top N historical results 
         prevchats_results = retrieve_previouschats(userinput,n_results=5)
@@ -128,8 +137,9 @@ class Chatbot(object):
             # merge history to template_text(current query) as content
             appendchat_template = jinja_env.get_template(appendchat_template)
             # append previous chat to current chat
-            template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput)
+            template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput, **kwargs)
 
+        logger.info(template_text)
         chat_completion = client.chat.completions.create(
             messages=history
             +[
@@ -197,11 +207,11 @@ class Chatbot(object):
         result = self.chat(
             text=text, 
             history=history, 
+            require_json=True,
             template="rerank.jinja2",
             candidate_set=candidate_set, 
             user_history=user_history
         )
-        logger.info(result)
         return result
 
     def send_message(self, text, blocks=None, debug=None):
