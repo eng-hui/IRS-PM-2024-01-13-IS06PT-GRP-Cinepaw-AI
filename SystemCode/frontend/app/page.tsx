@@ -98,12 +98,16 @@ export default function App(){
   };
 
   const renderMessage = (msg:any) => {
+    console.log(msg)
     return (<><div id={msg?.id}>
       <Markdown>{String(msg?.content)}</Markdown>
-      <Row>
+      <Row gutter={16}>
       { (msg?.blocks??[]).map((e:any)=>{
-        return( <Col span={3} key={e.title}>
-          <Block title={e.title} 
+        return( <Col span={5} key={e.title}>
+          <Block 
+          id = {e.id}
+          title={e.title} 
+          comment={e.bear_comment}
           image_url={"https://media.themoviedb.org/t/p/w440_and_h660_face"+e.poster_path}
           ></Block></Col>
         )

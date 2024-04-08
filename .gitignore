@@ -160,8 +160,7 @@ cython_debug/
 #.idea/
 
 
-SystemCode/experiments/datasets/ml25m
-SystemCode/experiments/datasets/ml-25m*
+SystemCode/experiments/datasets/ml25m/ratings.csv
 
 */tmp/
 SystemCode/experiments/chroma_data/*
