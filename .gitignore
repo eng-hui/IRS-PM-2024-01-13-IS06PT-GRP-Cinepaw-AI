@@ -166,3 +166,4 @@ SystemCode/experiments/datasets/ml25m/ratings.csv
 SystemCode/experiments/chroma_data/*
 chroma.sqlite3
 *.bin
+tmp.db
