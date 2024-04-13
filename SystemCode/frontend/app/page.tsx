@@ -28,8 +28,8 @@ import useSWR from 'swr'
 import { Modal } from '@lobehub/ui';
 import { access } from 'fs';
 import { Content } from 'next/font/google';
-
-
+// import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
+import { Radio } from 'antd';
 
 
 export default function App(){
@@ -220,6 +220,8 @@ export default function App(){
     speechRecognizer.close();
   }
 
+  const [voice, setVoice] = useState('voice-a');
+
   return (
     <ThemeProvider>
       {contextHolder}
@@ -228,9 +230,16 @@ export default function App(){
         onCancel={handleCancel}
         onOk={handleOk}
         open={isModalOpen}
-        title="Basic Modal"
+        title="Bear Config"
       >
-        <p>hello</p>
+        <Card title="Voice">
+        <Radio.Group name="Voice" defaultValue={voice} onChange={(e)=>{setVoice(e.target.value);}}>
+          <Radio value={'voice-a'}>A</Radio>
+          <Radio value={'voice-b'}>B</Radio>
+          <Radio value={'voice-c'}>C</Radio>
+          <Radio value={'voice-d'}>D</Radio>
+        </Radio.Group>
+        </Card>
       </Modal>
       <Row><Col span={1}><SideNav
         style={{"width": "100%"}}       
