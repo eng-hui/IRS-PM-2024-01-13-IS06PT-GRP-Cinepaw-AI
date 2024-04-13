@@ -136,7 +136,7 @@ export default function App(){
             if (response.status === 200) {
               let access_token = response.data;
               let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
-              speechConfig.speechSynthesisVoiceName = "en-US-BrianMultilingualNeural";
+              speechConfig.speechSynthesisVoiceName = voice;
 
               let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
               synthesizer.speakTextAsync(chatresponse.content, function (result) {
@@ -220,7 +220,7 @@ export default function App(){
     speechRecognizer.close();
   }
 
-  const [voice, setVoice] = useState('voice-a');
+  const [voice, setVoice] = useState('en-US-BrianMultilingualNeural');
 
   return (
     <ThemeProvider>
@@ -234,10 +234,10 @@ export default function App(){
       >
         <Card title="Voice">
         <Radio.Group name="Voice" defaultValue={voice} onChange={(e)=>{setVoice(e.target.value);}}>
-          <Radio value={'voice-a'}>A</Radio>
-          <Radio value={'voice-b'}>B</Radio>
-          <Radio value={'voice-c'}>C</Radio>
-          <Radio value={'voice-d'}>D</Radio>
+          <Radio value={'en-US-BrianMultilingualNeural'}>Polar Prince</Radio>
+          <Radio value={'en-SG-LunaNeural'}>Sun Bear Soprano</Radio>
+          <Radio value={'en-SG-WayneNeural'}>Grizzly Groove</Radio>
+          <Radio value={'zh-CN-XiaochenNeural'}>Panda Pitch</Radio>
         </Radio.Group>
         </Card>
       </Modal>
