@@ -31,6 +31,7 @@ import { access } from 'fs';
 import { Content } from 'next/font/google';
 // import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
 import { Radio } from 'antd';
+import { SpeechConfig, SpeechSynthesizer, AudioConfig, SpeechRecognizer} from 'microsoft-cognitiveservices-speech-sdk'
 
 
 export default function App(){
@@ -118,8 +119,16 @@ export default function App(){
       </>)
   }
 
+  // useEffect(() => {
+  //   const script = document.createElement('script');
+  //   script.src = 'https://aka.ms/csspeech/jsbrowserpackageraw';
+  //   script.async = true;
+  //   document.body.appendChild(script);
 
-
+  //   return () => {
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
 
   //fetch result
   const [getFlag, setGetFlag] = useState(true)
@@ -135,20 +144,18 @@ export default function App(){
           axios.get("/api/get_speech_token").then((response) => {  
             if (response.status === 200) {
               let access_token = response.data;
-              let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
+              let speechConfig = SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
               speechConfig.speechSynthesisVoiceName = voice;
 
-              let synthesizer = new SpeechSDK.SpeechSynthesizer(speechConfig);
-              synthesizer.speakTextAsync(chatresponse.content, function (result) {
+              let synthesizer = new SpeechSynthesizer(speechConfig);
+              synthesizer.speakTextAsync(chatresponse.content, function (result:any) {
                 console.log("log:");
                 console.log(result);
                 synthesizer.close();
-                synthesizer = undefined;
-              }, function (err) {
+              }, function (err:any) {
                 console.log("error:");
                 console.log(err);
                 synthesizer.close();
-                synthesizer = undefined;
               });
             }
           });
@@ -165,25 +172,16 @@ export default function App(){
   }
   const { data, error} = useSWR("/api/sub_message/"+String(sessionKey), fetcher, { refreshInterval: 1000 });
   //load azure speech javascript
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://aka.ms/csspeech/jsbrowserpackageraw';
-    script.async = true;
-    document.body.appendChild(script);
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
 
   const startSpeechText = ()=>{
     axios.get("/api/get_speech_token").then((response) => {  
       if (response.status === 200) {
         let access_token = response.data;
-        let speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
+        let speechConfig = SpeechConfig.fromAuthorizationToken(access_token, "southeastasia");
         speechConfig.speechRecognitionLanguage = "en-US";
-        var audioConfig  = SpeechSDK.AudioConfig.fromDefaultMicrophoneInput();
-        let recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
+        var audioConfig  = AudioConfig.fromDefaultMicrophoneInput();
+        let recognizer = new SpeechRecognizer(speechConfig, audioConfig);
         setSpeechRecognizer(recognizer);
 
         recognizer.startContinuousRecognitionAsync (
