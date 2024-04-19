@@ -65,6 +65,19 @@ async def init_chat():
     session_key = uuid.uuid4().hex
     return {"session_key":session_key}
 
+@app.get("/load_user_history")
+async def load_user():
+    df = load_user_history(user_id=USER_ID)
+    records = df.to_dict(orient="records")
+    results = []
+    for x in records:
+        if x.get("tmdbId"):
+            tmp = query_tmdb_detail(id=x.get("tmdbId"))
+            tmp["quote"] = x["quote"]
+            results.append(tmp)
+    return results
+
+
 
 async def construct_result(text, blocks=None):
     timestamp = int(datetime.datetime.now().timestamp()*1000)
@@ -244,6 +257,9 @@ async def get_speech_token():
     response = requests.post(fetch_token_url, headers=headers)
     access_token = str(response.text)
     return access_token
+
+
+
 
 def query_movie_db(title):
     import urllib.parse

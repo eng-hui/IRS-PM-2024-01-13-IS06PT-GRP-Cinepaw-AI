@@ -23,6 +23,7 @@ import axios from "axios";
 import { Row, Col, Card,Image, message, Button } from 'antd';
 import { ImageGallery } from '@lobehub/ui';
 import { Block } from './block';
+import { History } from './history_block';
 import { Album, MessageSquare, Settings2 } from 'lucide-react';
 import useSWR from 'swr'
 import { Modal } from '@lobehub/ui';
@@ -98,7 +99,6 @@ export default function App(){
   };
 
   const renderMessage = (msg:any) => {
-    console.log(msg)
     return (<><div id={msg?.id}>
       <Markdown>{String(msg?.content)}</Markdown>
       <Row gutter={16}>
@@ -222,6 +222,67 @@ export default function App(){
 
   const [voice, setVoice] = useState('en-US-BrianMultilingualNeural');
 
+  let main_tab = <></>
+  if(tab=="chat"){
+    main_tab =<Col span={23}>
+    <Row>
+      <Col span={24} style={{ height: '400px', overflow: 'auto' }}>
+        <ChatList
+          data={conversation}
+          renderMessages={{
+            default: (msg) => {
+              return renderMessage(msg)
+            },
+          }}
+        ></ChatList>
+        <div ref={scrollableRef} style={{ overflowAnchor: 'auto' }}></div>
+      </Col>
+    </Row>
+    <Row style={{ marginTop: '20px' }} >
+      <Col span={24}>
+        <Card style={{backgroundColor: "FFFFFF"}}>
+        <ChatInputArea 
+          onSend={() => sendMessage()}
+          value={inputText}
+          onInput={(value) => { setInputText(value) }}
+          bottomAddons={<ChatSendButton />}
+          topAddons={
+            <ChatInputActionBar
+              leftAddons={
+                <>
+                  {/* <ActionIcon icon={LibraryBig} onClick={() => { test() }}/> */}
+                  <ActionIcon icon={micIconRef} onClick={
+                    () => {
+                      if (micIconRef === MicIcon) {
+                        setMicIcon(MicOff);
+                        endSpeechText();
+                      } else {
+                        setMicIcon(MicIcon);
+                        startSpeechText();
+                      }
+                    }                           
+                   } />
+                  <ActionIcon icon={Languages} />
+                  <ActionIcon icon={Eraser} onClick={() => { setInputText('') }} />
+                  {/* <TokenTag maxValue={5000} value</div>={1000} /> */}
+                </>
+              }
+            />
+          }
+        />
+        </Card>
+      </Col>
+    </Row>      
+  </Col>
+  }
+
+  if (tab=='market'){
+    main_tab = <Col span={23}>    
+    <History></History>
+  </Col>
+  }
+
+
   return (
     <ThemeProvider>
       {contextHolder}
@@ -262,56 +323,8 @@ export default function App(){
     }
       bottomActions={<ActionIcon icon={Settings2} onClick={showModal}/>}
       ></SideNav></Col>
-      <Col span={23}>
-        <Row>
-          <Col span={24} style={{ height: '400px', overflow: 'auto' }}>
-            <ChatList
-              data={conversation}
-              renderMessages={{
-                default: (msg) => {
-                  return renderMessage(msg)
-                },
-              }}
-            ></ChatList>
-            <div ref={scrollableRef} style={{ overflowAnchor: 'auto' }}></div>
-          </Col>
-        </Row>
-        <Row style={{ marginTop: '20px' }} >
-          <Col span={24}>
-            <Card style={{backgroundColor: "FFFFFF"}}>
-            <ChatInputArea 
-              onSend={() => sendMessage()}
-              value={inputText}
-              onInput={(value) => { setInputText(value) }}
-              bottomAddons={<ChatSendButton />}
-              topAddons={
-                <ChatInputActionBar
-                  leftAddons={
-                    <>
-                      {/* <ActionIcon icon={LibraryBig} onClick={() => { test() }}/> */}
-                      <ActionIcon icon={micIconRef} onClick={
-                        () => {
-                          if (micIconRef === MicIcon) {
-                            setMicIcon(MicOff);
-                            endSpeechText();
-                          } else {
-                            setMicIcon(MicIcon);
-                            startSpeechText();
-                          }
-                        }                           
-                       } />
-                      <ActionIcon icon={Languages} />
-                      <ActionIcon icon={Eraser} onClick={() => { setInputText('') }} />
-                      {/* <TokenTag maxValue={5000} value</div>={1000} /> */}
-                    </>
-                  }
-                />
-              }
-            />
-            </Card>
-          </Col>
-        </Row>      
-      </Col>
+      {main_tab}
+
       </Row>
 
     </ThemeProvider>

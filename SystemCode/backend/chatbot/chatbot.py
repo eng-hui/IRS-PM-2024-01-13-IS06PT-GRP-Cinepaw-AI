@@ -154,7 +154,7 @@ class Chatbot(object):
         # fix null values
         if require_json:
             output_text = chat_completion.dict()["choices"][0]["message"]["content"]
-            output_text = output_text.replace("null","[]")
+            # output_text = output_text.replace("null","[]")
             output_text  = json.loads(output_text)
             
             # convert and embed current enquiry + reply as previous chat then store to vector db for future retrieval
