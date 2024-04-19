@@ -29,6 +29,7 @@ faiss-cpu = "^1.8.0"
 qdrant-client = "^1.8.2"
 jupyterlab = "^4.1.5"
 chromadb = "^0.4.24"
+cython = "<3"
 
 [build-system]
 requires = ["poetry-core"]
