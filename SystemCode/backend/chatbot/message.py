@@ -19,8 +19,11 @@ def consume_chat_message(session_key):
         return tmp
         
     chat = Queue(session_key, exchange=chat_exchange, routing_key=session_key)
-    with conn.Consumer(chat, callbacks=[fetch_message]) as consumer:
-        # Process messages and handle events on all channels
-        conn.drain_events(timeout=1)
+    with Connection(REDIS_URL) as conn:
+        with conn.Consumer(chat, callbacks=[fetch_message]) as consumer:
+            try:
+                conn.drain_events(timeout=1)
+            except Exception as e:
+                pass
     return tmp.get("result")
 
