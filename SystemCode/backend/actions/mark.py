@@ -14,6 +14,8 @@ def preference_inteprete(text, history):
     logger.info("preference_inteprete:")
     logger.info(result)
     result = json.loads(result)
+    if result.get("movies"):
+        result = result.get("movies")
     if isinstance(result, dict):
         p = result
         title = p.get("title")

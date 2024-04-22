@@ -53,7 +53,7 @@ def get_smilar_score(s_1, s_2):
     return difflib.SequenceMatcher(None, s_1, s_2).quick_ratio()
 
 def convert_tmdb_to_mvlen(tmdb_title):
-    mvlen_result = movies[movies["title"].apply(lambda x:tmdb_title.lower() in x.lower())]
+    mvlen_result = movies[movies["title"].apply(lambda x:tmdb_title.lower() in str(x).lower())]
     if len(mvlen_result) > 0:
         mvlen_result["score"] = mvlen_result["title"].apply(lambda x:get_smilar_score(tmdb_title.lower(), x.lower()))
         mvlen_result = mvlen_result.sort_values("score", ascending=False)
