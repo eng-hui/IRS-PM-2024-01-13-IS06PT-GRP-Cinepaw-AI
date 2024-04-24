@@ -15,7 +15,8 @@ TMBD_QUERY_API = "https://api.themoviedb.org/3/search/movie?include_adult=false&
 mnames = ['movie_id','title','genres']
 # movies = pd.read_csv('../experiments/datasets/ml-1m/movies.dat',sep='::',header=None,names=mnames,encoding="unicode_escape")
 movies = pd.read_csv(os.path.join(exp_folder,"datasets","ml-25m","xdf.csv"))
-movies["movie_id"] = movies["movieId"]
+if "movieId" in movies:
+    movies["movie_id"] = movies["movieId"]
 lbe = LabelEncoder()
 movies["raw_genres"] = movies["genres"].copy()
 movies["genres"] = movies["genres"].apply(lambda x:x.split("|")[0])
