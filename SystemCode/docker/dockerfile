@@ -85,5 +85,6 @@ EXPOSE 8000
 # COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 # WORKDIR /app
 # CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app"]
-RUN apt-get install redis
+RUN apt install -y redis-server
+RUN rm -rf /app/dump.rdb
 CMD ["supervisord"]
