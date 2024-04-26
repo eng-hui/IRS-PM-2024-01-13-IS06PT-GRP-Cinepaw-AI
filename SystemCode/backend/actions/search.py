@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from utils import logger
 import chromadb
-chroma_client = chromadb.PersistentClient(path="../experiments/chroma_data")
+chroma_client = chromadb.PersistentClient(path="./chroma_data")
 
 file_location = os.path.abspath(__file__)
 exp_folder = os.path.join(os.path.dirname(file_location),"..","..","experiments")    

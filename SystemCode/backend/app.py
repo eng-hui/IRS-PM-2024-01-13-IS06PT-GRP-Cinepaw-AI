@@ -33,8 +33,8 @@ import chromadb
 from scipy.spatial.distance import cdist
 import numpy as np
 
-chroma_client = chromadb.PersistentClient(path="../experiments/chroma_data")
-collection = chroma_client.get_or_create_collection("movie_rec_25m_0402")
+chroma_client = chromadb.PersistentClient(path="./chroma_data")
+collection = chroma_client.get_or_create_collection("movie_rec_0426")
 
 app = FastAPI()
 

@@ -1,8 +1,0 @@
-../experiments/chroma_data/chroma.sqlite3 filter=lfs diff=lfs merge=lfs -text
-SystemCode/experiments/chroma_data/chroma.sqlite3 filter=lfs diff=lfs merge=lfs -text
-SystemCode/experiments/chroma_data/ filter=lfs diff=lfs merge=lfs -text
-../experiments/chroma_data/6f6ca094-60ea-4532-9cb9-6a644aeb143c filter=lfs diff=lfs merge=lfs -text
-../experiments/chroma_data/a54fa060-a4b2-4dfd-8397-a52c242b068c filter=lfs diff=lfs merge=lfs -text
-../experiments/chroma_data/0d9ecdc3-eda8-40c4-bbed-60f403b8c9ff filter=lfs diff=lfs merge=lfs -text
-../experiments/chroma_data/41be8e6d-7b1e-4cc6-9202-5a223c1f58b6 filter=lfs diff=lfs merge=lfs -text
-../experiments/chroma_data/5fb115e4-6c6f-4f9d-a97f-63be38a14c95 filter=lfs diff=lfs merge=lfs -text
