@@ -10,22 +10,35 @@
 ---
 
 ## SECTION 2 : EXECUTIVE SUMMARY / PAPER ABSTRACT
-In today's modern households, the television has become an indispensable companion, woven seamlessly into the fabric of our daily lives. From the joyous laughter of young adolescents immersed in colorful cartoons to the captivating narratives that engage adults in comedy, drama, and even action, film and television have become essential pillars of our lifestyles. Whether it's for relaxation, bonding with friends, or simply passing time, the screen holds the power to transport us to worlds both familiar and fantastical, offering moments of escape and connection in equal measure.
+#### Problem Statement and Proposed Solution 
 
-In an era where entertainment options abound, the dilemma of what to watch often leaves us spoiled for choice. Companies like Netflix have revolutionized the viewing experience with innovative recommender systems, analyzing our viewing history to predict and suggest movies that align with our preferences. Yet, behind the scenes, much of this magic unfolds in the backend, leaving us with a sense of detachment and a lack of control over the content selection process.
+The current streaming platforms recommender systems often fail to capture individual preferences and lack personalisation elements in providing movie recommendation. This may lead to loss of users over a period of time once they feel frustrated and hop to another platform that give them better user experience to find the movies that interest them.  
 
+Thus, our proposal - CinePaw AI introduces an advanced movie recommendation system that leverages Large Language Models (LLMs) to create an intelligent, interactive chatbot to retain the users and make them royal to our platforms. This chatbot goes beyond traditional recommendation algorithms by engaging in natural language dialogues with users, enabling a personalized movie discovery experience and improve the overall user experience in sourcing for movies that they are interested and stay royal to the platform. 
 
-[Place Holder]
-Singapore ranks amongst countries with the highest population density in the world. In a bid to have firm control over long term urban planning, the Singapore government came up with the “Built to Order” (abbreviated BTO) initiative back in 2001. These are new Housing Development Board (HDB) flats tightly controlled by their eligibility and quantity released every year. In more recent years, the modern BTO scheme in Singapore requires a waiting period of 3-4 years, and is generally targeted at young Singaporean couples looking to purchase their first property and set up a family. Nationality and income ceilings are some of the broad filters that determine one’s eligibility for the highly sought after projects. 
+ 
 
+#### Differentiation from Existing Markets 
 
-Our team, comprising of 6 young Singaporeans, all hope to be property owners one day. Many of our peers opt for BTO flats due to their affordability, existence of financial aid from the government, as well as their resale value. However, there often exists a knowledge gap for these young couples during the decision making process and they end up making potentially regretful decisions. We would like to bridge this knowledge gap, and have hence chosen to base our project on creating a recommender system for BTO flats, utilizing the data from recent launches in Tampines, Eunos, Sengkang and Punggol. 
+CinePaw AI differentiates itself from existing market offerings such as  
 
+its recommender model (ComiRec), which provides nuanced recommendations by categorising user interests into multiple segments.  
 
-Using the techniques imparted to us in lectures, our group first set out to build a sizeable knowledge base via conducting an interview and administering a survey. While building the system, we utilized tools such as Java to scrape real time data from HDB website and transform it into a database, CLIPS to synthesize the rule based reasoning process, and Python to integrate it into an easy to use UI for the everyday user. To add icing on the cake, we even hosted the system on a website so that the everyday user can access it through the click of a link.
+chatbot that remembers and reference past user interactions. This stateful interaction enhances the personalization and relevance of recommendations.  
 
+cognitive services, allowing users to engage in human-like conversations with the system, receiving both spoken and textual responses, setting it apart from the conventional, less interactive recommendation services found in current streaming platforms. 
 
-Our team had an amazing time working on this project, and hope to share our insights with everyone. Despite a focus on BTO flats, we would recommend it for everybody interested in understanding property market trends for residence or investment purposes. There truly are a wide array of factors behind the decision to invest in a property, and we only wish there was more time to work on the scope and scale of the project. 
+ 
+
+#### Market Positioning 
+
+The streaming service market is highly competitive and continuously evolving with viewers seeking more personalized and engaging experiences. We position CinePaw AI to be the forefront in shifting towards the direction what we define as Interactive User-Centric Recommendation System (IUCRS). It fills a significant gap left by existing platforms, offering unique experience that emphasises on user interaction, engagement, and satisfaction. 
+
+ 
+
+#### Conclusion and Future Prospects 
+
+Moving forward, CinePaw AI plans to expand its data sources and enhance its ecosystem to maintain relevance and adapt to changing market demands. The project team is also aware of potential challenges, such as data source limitations and the need for continuous updates to the AI algorithms to handle diverse user interactions. These enhancements will be crucial for scaling operations and improving the system's accuracy and more precise user engagement. 
 
 ---
 
@@ -33,80 +46,28 @@ Our team had an amazing time working on this project, and hope to share our insi
 
 | Official Full Name  | Student ID | Work Items | Email  |
 | :------------ |:---------------:| :-----| :-----|
-| Tan Eng Hui | A0291201W | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1330340@u.nus.edu |
-| Lois Chee Li Ping | A0292098R | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1338192@u.nus.edu |
-| Dong Yuantong | A0292041N | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1337515@u.nus.edu |
-| Wang Tao | A0291189R | xxxxxxxxxx yyyyyyyyyy zzzzzzzzzz| e1330328@u.nus.edu |
+| Tan Eng Hui | A0291201W | Ideation, Architecture/Design, Testing, Front/Backend Development, Landscape Exploration, Knowledge Sharing, Project Documentation| e1330340@u.nus.edu |
+| Lois Chee Li Ping | A0292098R | Ideation, Architecture/Design, Testing, Front/Backend Development, Landscape Exploration, Knowledge Sharing, Project Documentation| e1338192@u.nus.edu |
+| Dong Yuantong | A0292041N |Ideation, Architecture/Design, Testing, Front/Backend Development, Landscape Exploration, Knowledge Sharing, Project Documentation| e1337515@u.nus.edu |
+| Wang Tao | A0291189R | Ideation, Architecture/Design, Testing, Front/Backend Development, Landscape Exploration, Knowledge Sharing, Project Documentation| e1330328@u.nus.edu |
 
 ---
 
 ## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
 
-[Place Holder]
-[![Sudoku AI Solver](http://img.youtube.com/vi/-AiYLUjP6o8/0.jpg)](https://youtu.be/-AiYLUjP6o8 "Sudoku AI Solver")
+| Click here for Promote video  | Click here for Technical Design video | 
+| :------------ |:---------------:| 
+| <a href="https://www.youtube.com/watch?v=29j37QG0DpM">
+  <img src="SystemCode/frontend/public/images/cinepaw_logo.webp" alt="CinePaw AI" width="200" height="200" /></a> | <a href="[https://www.youtube.com/watch?v=29j37QG0DpM](https://youtu.be/5cxTfu4g51s)">  <img src="SystemCode/frontend/public/images/cinepaw_logo.webp" alt="CinePaw AI" width="200" height="200" /></a> | 
 
-Note: It is not mandatory for every project member to appear in video presentation; Presentation by one project member is acceptable. 
 
----
 
-## SECTION 5 : USER GUIDE
-
-`Refer to appendix <Installation & User Guide> in project report at Github Folder: ProjectReport`
-
-### [ 1 ] To run the system using iss-vm
-
-> download pre-built virtual machine from http://bit.ly/iss-vm
-
-> start iss-vm
-
-> open terminal in iss-vm
-
-> $ git clone https://github.com/telescopeuser/Workshop-Project-Submission-Template.git
-
-> $ source activate iss-env-py2
-
-> (iss-env-py2) $ cd Workshop-Project-Submission-Template/SystemCode/clips
-
-> (iss-env-py2) $ python app.py
-
-> **Go to URL using web browser** http://0.0.0.0:5000 or http://127.0.0.1:5000
-
-### [ 2 ] To run the system in other/local machine:
-### Install additional necessary libraries. This application works in python 2 only.
-
-> $ sudo apt-get install python-clips clips build-essential libssl-dev libffi-dev python-dev python-pip
-
-> $ pip install pyclips flask flask-socketio eventlet simplejson pandas
 
 ---
-## SECTION 6 : PROJECT REPORT / PAPER
 
-`Refer to project report at Github Folder: ProjectReport`
+## SECTION 5 : DEPLOYMENT AND USER GUIDE
 
-**Recommended Sections for Project Report / Paper:**
-- Executive Summary / Paper Abstract
-- Sponsor Company Introduction (if applicable)
-- Business Problem Background
-- Market Research
-- Project Objectives & Success Measurements
-- Project Solution (To detail domain modelling & system design.)
-- Project Implementation (To detail system development & testing approach.)
-- Project Performance & Validation (To prove project objectives are met.)
-- Project Conclusions: Findings & Recommendation
-- Appendix of report: Project Proposal
-- Appendix of report: Mapped System Functionalities against knowledge, techniques and skills of modular courses: MR, RS, CGS
-- Appendix of report: Installation and User Guide
-- Appendix of report: 1-2 pages individual project report per project member, including: Individual reflection of project journey: (1) personal contribution to group project (2) what learnt is most useful for you (3) how you can apply the knowledge and skills in other situations or your workplaces
-- Appendix of report: List of Abbreviations (if applicable)
-- Appendix of report: References (if applicable)
+Refer to **Installation Guide** and **User Guide** respectively at appendix section in the project report at Github Folder: **ProjectReport**
 
----
-## SECTION 7 : MISCELLANEOUS
-
-`Refer to Github Folder: Miscellaneous`
-
-### HDB_BTO_SURVEY.xlsx
-* Results of survey
-* Insights derived, which were subsequently used in our system
 
 ---
