@@ -23,8 +23,8 @@ movies["genres"] = lbe.fit_transform(movies["genres"]) + 1
 
 pad_sequences = tf.keras.utils.pad_sequences
 SEQ_LEN = 50
-chroma_client = chromadb.PersistentClient(path=os.path.join(exp_folder,"chroma_data"))
-collection = chroma_client.get_or_create_collection("movie_rec_25m_0402")
+chroma_client = chromadb.PersistentClient(path="./chroma_data")
+collection = chroma_client.get_or_create_collection("movie_rec_0426")
 
 
 def load_rec_model():

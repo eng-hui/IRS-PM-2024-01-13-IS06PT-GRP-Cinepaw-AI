@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from utils import logger
 import chromadb
-chroma_client = chromadb.PersistentClient(path="../experiments/chroma_data")
+chroma_client = chromadb.PersistentClient(path="./chroma_data")
 
 file_location = os.path.abspath(__file__)
 exp_folder = os.path.join(os.path.dirname(file_location),"..","..","experiments")    
@@ -15,7 +15,8 @@ TMBD_QUERY_API = "https://api.themoviedb.org/3/search/movie?include_adult=false&
 mnames = ['movie_id','title','genres']
 # movies = pd.read_csv('../experiments/datasets/ml-1m/movies.dat',sep='::',header=None,names=mnames,encoding="unicode_escape")
 movies = pd.read_csv(os.path.join(exp_folder,"datasets","ml-25m","xdf.csv"))
-movies["movie_id"] = movies["movieId"]
+if "movieId" in movies:
+    movies["movie_id"] = movies["movieId"]
 lbe = LabelEncoder()
 movies["raw_genres"] = movies["genres"].copy()
 movies["genres"] = movies["genres"].apply(lambda x:x.split("|")[0])
@@ -53,7 +54,7 @@ def get_smilar_score(s_1, s_2):
     return difflib.SequenceMatcher(None, s_1, s_2).quick_ratio()
 
 def convert_tmdb_to_mvlen(tmdb_title):
-    mvlen_result = movies[movies["title"].apply(lambda x:tmdb_title.lower() in x.lower())]
+    mvlen_result = movies[movies["title"].apply(lambda x:tmdb_title.lower() in str(x).lower())]
     if len(mvlen_result) > 0:
         mvlen_result["score"] = mvlen_result["title"].apply(lambda x:get_smilar_score(tmdb_title.lower(), x.lower()))
         mvlen_result = mvlen_result.sort_values("score", ascending=False)

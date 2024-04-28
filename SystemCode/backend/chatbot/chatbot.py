@@ -84,20 +84,21 @@ def chat(text, history, require_json=True, template="bear.jinja2",appendchat_tem
         # append previous chat to current chat
         template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput)
 
+    history = [{"content":template_text, "role":"system"}] + history
     chat_completion = client.chat.completions.create(
         messages=history
         +[
             {
                 "role": "user",
-                "content": template_text,
+                "content": text,
             }
         ],
         response_format = response_format,
-        model=os.environ.get("DEFAULT_MODEL") or "gpt-4-turbo-preview",
+        model=os.environ.get("DEFAULT_MODEL") or "gpt-4-turbo",
     )
     output_text = chat_completion.dict()["choices"][0]["message"]["content"]
     # fix null values
-    output_text = output_text.replace("null","[]")
+    # output_text = output_text.replace("null","[]")
     # convert and embed current enquiry + reply as previous chat then store to vector db for future retrieval
     reply = json.loads(output_text).get("reply")
     prevchat_template = jinja_env.get_template(prevchat_template)
@@ -137,19 +138,21 @@ class Chatbot(object):
             # merge history to template_text(current query) as content
             appendchat_template = jinja_env.get_template(appendchat_template)
             # append previous chat to current chat
-            template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n Answer current query:" + userinput, **kwargs)
+            template_text = template.render(text="".join(prevchats_results["documents"][0]) +"\n =========== \n", **kwargs)
 
-        logger.info(template_text)
+        logger.info("input_text")
+        logger.info(text)
+        history = [{"content":template_text, "role":"system"}] + history
         chat_completion = client.chat.completions.create(
             messages=history
             +[
                 {
                     "role": "user",
-                    "content": template_text,
+                    "content": text,
                 }
             ],
             response_format = response_format,
-            model=os.environ.get("DEFAULT_MODEL") or "gpt-4-turbo-preview",
+            model=os.environ.get("DEFAULT_MODEL") or "gpt-4-turbo",
         )
         # fix null values
         if require_json:

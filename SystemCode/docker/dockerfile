@@ -1,5 +1,5 @@
-From python:3.11.7-bullseye as python-base
-
+# From python:3.11.7-bullseye as python-base
+From pytorch/pytorch:2.1.0-cuda11.8-cudnn8-devel
     # python
 ENV PYTHONUNBUFFERED=1 \
     # prevents python creating .pyc files
@@ -31,7 +31,6 @@ ENV PYTHONUNBUFFERED=1 \
 ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 
-FROM python-base as builder-base
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
         # deps for installing poetry
@@ -41,24 +40,22 @@ RUN apt-get update \
 
 # install poetry - respects $POETRY_VERSION & $POETRY_HOME
 RUN curl -sSL https://install.python-poetry.org | python3 -
-RUN apt install -y pkg-config libhdf5-dev
 
 # copy project requirement files here to ensure they will be cached.
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 RUN poetry --version
-RUN poetry config installer.max-workers 10
-RUN poetry install 
+RUN poetry install --no-dev
 
 
 # `development` image is used during development / testing
-FROM python-base as development
+# FROM python-base as development
 ENV FASTAPI_ENV=development
 WORKDIR $PYSETUP_PATH
 
 # copy in our built poetry + venv
-COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+#COPY --from=builder-base $POETRY_HOME $POETRY_HOME
+#COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 
 # quicker install as runtime deps are already installed
 RUN poetry install
@@ -71,7 +68,7 @@ RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesourc
 RUN apt update
 RUN apt install -y nodejs
 Run apt install -y supervisor
-Run apt install -y nginx
+Run DEBIAN_FRONTEND=noninteractive apt install -y nginx
 WORKDIR /app
 COPY ./ /app/
 
@@ -88,4 +85,6 @@ EXPOSE 8000
 # COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
 # WORKDIR /app
 # CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app"]
+RUN apt install -y redis-server
+RUN rm -rf /app/dump.rdb
 CMD ["supervisord"]

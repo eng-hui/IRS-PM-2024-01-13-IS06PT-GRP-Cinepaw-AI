@@ -79,6 +79,7 @@ export default function App(){
   }
   const sendMessage = (newMessage?: string) => {
     let timestamp=new Date().getTime()
+    let content = newMessage || inputText
     const c: ChatMessage = {
       content: newMessage || inputText,
       createAt: timestamp,
@@ -94,7 +95,7 @@ export default function App(){
 
     setConversation(oldArray => [...oldArray, c]);
     setInputText('');
-    axios.post("/api/chat_input", { "text": inputText, "history": conversation, "session_key":sessionKey}).then((response) => {
+    axios.post("/api/chat_input", { "text": content, "history": conversation, "session_key":sessionKey}).then((response) => {
       console.log(response.data);
     });
   };
@@ -201,6 +202,7 @@ export default function App(){
           // speech recognition output
           if (e.result.text.length > 0 && e.result.text!="undefined" && e.result.text!=""){
             const newText = e.result.text;
+            console.log("new_text====================================");
             console.log(newText);
             setInputText(newText);
             // console.log(inputText);

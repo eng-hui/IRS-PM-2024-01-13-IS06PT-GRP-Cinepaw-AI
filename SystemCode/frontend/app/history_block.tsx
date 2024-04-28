@@ -44,7 +44,7 @@ export const History: React.FC = (prop) => {
         <Row gutter={16} style={{marginTop:'20px', marginLeft:'20px'}}>
             {(data??[]).map((e:any)=>{
                 return (
-                <Col span={5}>
+                <Col span={5} key={e.id}>
                 <Card
                     hoverable  
                     onClick={()=>{window.open('https://www.themoviedb.org/movie/'+String(e.id), '_blank');}}  
