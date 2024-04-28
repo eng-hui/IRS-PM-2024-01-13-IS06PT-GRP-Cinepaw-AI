@@ -53,12 +53,11 @@ Moving forward, CinePaw AI plans to expand its data sources and enhance its ecos
 
 ---
 
-## SECTION 4 : VIDEO OF SYSTEM MODELLING & USE CASE DEMO
+## SECTION 4 : VIDEO OF USE CASE DEMO AND TECHNICAL DESIGN 
 
-| Click here for Promote video  | Click here for Technical Design video | 
+| Click here for Promo video  | Click here for Tech video | 
 | :------------ |:---------------:| 
-| <a href="https://www.youtube.com/watch?v=29j37QG0DpM">
-  <img src="SystemCode/frontend/public/images/cinepaw_logo.webp" alt="CinePaw AI" width="200" height="200" /></a> | <a href="[https://www.youtube.com/watch?v=29j37QG0DpM](https://youtu.be/5cxTfu4g51s)">  <img src="SystemCode/frontend/public/images/cinepaw_logo.webp" alt="CinePaw AI" width="200" height="200" /></a> | 
+| <a href="https://www.youtube.com/watch?v=29j37QG0DpM"><img src="SystemCode/frontend/public/images/cinepaw_logo.webp" alt="CinePaw AI" width="200" height="200"></a> | <a href="https://www.youtube.com/watch?v=5cxTfu4g51s">  <img src="SystemCode/frontend/public/images/cinepaw_logo.webp" alt="CinePaw AI" width="200" height="200"></a> | 
 
 
 
