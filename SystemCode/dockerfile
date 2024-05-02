@@ -70,13 +70,14 @@ RUN apt install -y nodejs
 Run apt install -y supervisor
 Run DEBIAN_FRONTEND=noninteractive apt install -y nginx
 WORKDIR /app
-COPY ./ /app/
+COPY ./frontend /app/frontend
 
 # RUN apt install -y npm
 WORKDIR /app/frontend
 RUN npm install
 RUN npm run build
 WORKDIR /app
+COPY ./ /app/
 COPY ./supervisord.conf /etc/supervisor/supervisord.conf
 RUN mkdir /home/ubuntu
 EXPOSE 8000
@@ -87,4 +88,6 @@ EXPOSE 8000
 # CMD ["gunicorn", "-k", "uvicorn.workers.UvicornWorker", "main:app"]
 RUN apt install -y redis-server
 RUN rm -rf /app/dump.rdb
+COPY ./experiments/datasets/onnx.tar.gz /root/.cache/chroma/onnx_models/all-MiniLM-L6-v2/
+RUN python3 prepare.py
 CMD ["supervisord"]
