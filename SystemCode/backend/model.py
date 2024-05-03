@@ -22,13 +22,13 @@ movies["raw_genres"] = movies["genres"].copy()
 movies["genres"] = lbe.fit_transform(movies["genres"]) + 1
 
 pad_sequences = tf.keras.utils.pad_sequences
-SEQ_LEN = 50
+SEQ_LEN = 10
 chroma_client = chromadb.PersistentClient(path="./chroma_data")
 collection = chroma_client.get_or_create_collection("movie_rec_0426")
 
 
 def load_rec_model():
-    user_embedding_model = load_model(os.path.join(exp_folder,"user_emb_25m_0402.h5"), custom_objects)# load_model,just add a parameter
+    user_embedding_model = load_model(os.path.join(exp_folder,"user_emb.h5"), custom_objects)# load_model,just add a parameter
     return user_embedding_model
 
 user_embedding_model = load_rec_model()
@@ -57,7 +57,8 @@ def load_user_preference_for_model(user_id):
         "hist_genres": pad_sequences(np.array([df["genres"].tolist()]), maxlen=SEQ_LEN, padding='pre', truncating='post', value=0),
         "hist_hot": pad_sequences(np.array([df["hot"].tolist()]), maxlen=SEQ_LEN, padding='pre', truncating='post', value=0),
         "hist_grade": pad_sequences(np.array([df["grade"].tolist()]), maxlen=SEQ_LEN, padding='pre', truncating='post', value=0),
-        "hist_len": np.array([len(df["genres"].tolist())])
+        "hist_len": np.array([len(df["genres"].tolist())]),
+        "hist_year": pad_sequences(np.array([df["year"].tolist()]), maxlen=SEQ_LEN, padding='pre', truncating='post', value=0)
     }
     return model_input
     
