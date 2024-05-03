@@ -55,10 +55,18 @@ Moving forward, CinePaw AI plans to expand its data sources and enhance its ecos
 
 ## SECTION 4 : VIDEO OF USE CASE DEMO AND TECHNICAL DESIGN 
 
-| Click here for Promo video  | Click here for Tech video | 
+| Promo/Demo Video  | Technical Design video | 
 | :------------ |:---------------:| 
-| <a href="https://www.youtube.com/watch?v=29j37QG0DpM"><img src="SystemCode/frontend/public/images/cinepaw_logo.webp" alt="CinePaw AI" width="200" height="200"></a> | <a href="https://www.youtube.com/watch?v=5cxTfu4g51s">  <img src="SystemCode/frontend/public/images/cinepaw_logo.webp" alt="CinePaw AI" width="200" height="200"></a> | 
+| <a href="https://youtu.be/nE0uWWhE9eQ"><img src="Images/salesmanbear.jpg" alt="CinePaw AI" width="200" height="200"></a> | <a href="https://youtu.be/5cxTfu4g51s">  <img src="Images/techbear.jpg" alt="CinePaw AI" width="200" height="200"></a> | 
 
+
+
+
+---
+
+## SECTION 5 : PROJECT REPORT
+
+Refer to [Project Report.pdf](ProjectReport/Project%20Report.pdf) in the **ProjectReport** folder
 
 
 
@@ -66,7 +74,46 @@ Moving forward, CinePaw AI plans to expand its data sources and enhance its ecos
 
 ## SECTION 5 : DEPLOYMENT AND USER GUIDE
 
-Refer to **Installation Guide** and **User Guide** respectively at appendix section in the project report at Github Folder: **ProjectReport**
+You can also refer to **Installation/Deployment Guide** and **User Guide** respectively at appendix section in [Project Report.pdf](ProjectReport/Project%20Report.pdf). 
+
+
+**Pre-requisites**
+- Clone/download the repository from [IRS-PM-2024-01-13-ISO6PT-GRP-Cinepaw-AI](https://github.com/eng-hui/IRS-PM-2024-01-13-ISO6PT-GRP-Cinepaw-AI).  
+Ensure you obtain the following API keys from the listed resources:
+  - [OpenAI Platform](https://platform.openai.com/)
+  - [The Movie Database (TMDB)](https://www.themoviedb.org/)
+  - [Azure AI Speech Services](https://azure.microsoft.com/en-us/products/ai-services/ai-speech)
+- Docker
+- Internet Access
+- Chrome Browser
+
+**Instruction for Environmental variables and API access tokens**
+1.	Modify the .env file in the backend folder and update the following keys with your own keys (refer to pre-requisite)
+
+| Key                   | Default Value/Source                       |
+|-----------------------|--------------------------------------------|
+| DEFAULT_LLM_ENDPOINT  | openai or azure_openai                     |
+| DEFAULT_MODEL         | gpt-4-turbo-preview                        |
+| OPENAI_API_ENDPOINT   | # can be empty if not azure openai         |
+| OPENAI_API_KEY        | [According to the OpenAI service]          |
+| AZURESPEECH_API_KEY   | [According to the Azure AI speech service] |
+| TMDB_API              | [API Key_According to the TMDB API service]|
+
+Format reference: [https://www.dotenv.org/docs/security/env.html](https://www.dotenv.org/docs/security/env.html)
+
+<img src="Images/env_var.png" />
+
+**Instruction for Docker deployment**  
+2.  Launch terminal from the SystemCode folder  
+3.  Run `docker build . -f docker/dockerfile -t=cinepaw`  to build a cinepaw docker image  
+<img src="Images/docker_build.png" />  
+
+4.  Run cinepaw image by `docker run -p 8111:9880 --name cinepaw cinepaw`  
+<img src="Images/docker_run.png" />  
+ 
+5.  Launch browser and navigate to http://localhost:8111 to start using cinepaw*  
+*Do take note that it will take a while to warm up the system, if no response from the chatbot, please refresh after a few seconds.  
+<img src="Images/webpage_launch.png" />  
 
 
 ---
