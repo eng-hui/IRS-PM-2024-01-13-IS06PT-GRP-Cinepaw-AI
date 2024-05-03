@@ -57,7 +57,7 @@ Moving forward, CinePaw AI plans to expand its data sources and enhance its ecos
 
 | Promo/Demo Video  | Technical Design video | 
 | :------------ |:---------------:| 
-| <a href="https://youtu.be/u-dFRn-Fxgs"><img src="Images/salesmanbear.jpg" alt="CinePaw AI" width="200" height="200"></a> | <a href="https://youtu.be/5cxTfu4g51s">  <img src="Images/techbear.jpg" alt="CinePaw AI" width="200" height="200"></a> | 
+| <a href="https://youtu.be/wNqYnHEz6jM"><img src="Images/salesmanbear.jpg" alt="CinePaw AI" width="200" height="200"></a> | <a href="https://youtu.be/5cxTfu4g51s">  <img src="Images/techbear.jpg" alt="CinePaw AI" width="200" height="200"></a> | 
 
 
 
