@@ -72,7 +72,7 @@ Refer to [Project Report.pdf](ProjectReport/Project%20Report.pdf) in the **Proje
 
 ---
 
-## SECTION 5 : DEPLOYMENT AND USER GUIDE
+## SECTION 6 : DEPLOYMENT AND USER GUIDE
 
 You can also refer to **Installation/Deployment Guide** and **User Guide** respectively at appendix section in [Project Report.pdf](ProjectReport/Project%20Report.pdf). 
 
