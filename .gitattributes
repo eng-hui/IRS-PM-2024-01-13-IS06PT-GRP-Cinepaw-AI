@@ -30,3 +30,4 @@ SystemCode/experiments/chroma_data/ filter=lfs diff=lfs merge=lfs -text
 .sqlite3 filter=lfs diff=lfs merge=lfs -text
 *.sqlite3 filter=lfs diff=lfs merge=lfs -text
 SystemCode/experiments/chroma_data/chroma.sqlite3 filter=lfs diff=lfs merge=lfs -text
+*.bin filter=lfs diff=lfs merge=lfs -text

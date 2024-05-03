@@ -164,5 +164,5 @@ cython_debug/
 SystemCode/experiments/datasets/ml25m/ratings.csv
 
 */tmp/
-*.bin
+# *.bin
 tmp.db
